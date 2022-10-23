@@ -1,0 +1,46 @@
+{    
+    "System Description": {"System":"Conveyor Belt","Motor":"High Performance Electric Motor","Model": "HB64548","Type": "Induction Motor - Cage","Protection": "IP55","RatedPower": "1.10 kW (1.50 CV)","RatedVoltages": "220/380 V","RatedCurrents": "4.00/2.32 A","NominalFrequency":"60 Hz","RatedRotationSpeed":"3400 RPM","Topic": "system_description"},
+
+    "Driver Indication": {"Address": 1217,"Length": 1,"Rights": "RO","Type": "BITS","Unity": "-","Topic": "conveyorbelt/starterdriver"},
+    "Status ATV31": {"Address": 1313,"Length": 1,"Rights": "RW","Type": "BITS","Unity": "-","Topic": "conveyorbelt/motor/status"},
+    
+    "Set Point Inversor": {"Address": 1314,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "Hz","Topic": "conveyorbelt/measurements/frequency"},
+    
+    "Temperature A": {"Address": 701,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "conveyorbelt/measurements/temperature/winding/a"},
+	"Temperature B": {"Address": 703,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "conveyorbelt/measurements/temperature/winding/b"},
+	"Temperature C": {"Address": 705,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "conveyorbelt/measurements/temperature/winding/c"},
+	"Temperature Housing": {"Address": 707,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "conveyorbelt/measurements/temperature/housing"},
+
+    "Voltage AB": {"Address": 848,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/ab"},
+    "Voltage BC": {"Address": 849,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/bc"},
+    "Voltage CA": {"Address": 850,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/ca"},
+    "Voltage AN": {"Address": 911,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/an"},
+    "Voltage BN": {"Address": 912,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/bn"},
+    "Voltage CN": {"Address": 913,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/cn"},
+    "Voltage AVG": {"Address": 915,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/voltage/nr"},
+    
+    "Current A": {"Address": 841,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "conveyorbelt/measurements/current/a"},
+	"Current B": {"Address": 842,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "conveyorbelt/measurements/current/b"},
+	"Current C": {"Address": 843,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "conveyorbelt/measurements/current/c"},
+	"Current N": {"Address": 844,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "conveyorbelt/measurements/current/n"},
+	"Current AVG": {"Address": 846,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "conveyorbelt/measurements/current/avg"},
+    
+    "Voltage THD AN": {"Address": 801,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/voltage/an"},
+    "Voltage THD BN": {"Address": 802,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/voltage/bn"},
+    "Voltage THD CN": {"Address": 803,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/voltage/cn"},
+    "Voltage THD AB": {"Address": 805,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/voltage/ab"},
+    "Voltage THD BC": {"Address": 806,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/voltage/bc"},
+    "Voltage THD CA": {"Address": 807,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/voltage/ca"},
+   
+    "Current THD A": {"Address": 875,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/current/a"},
+    "Current THD B": {"Address": 876,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/current/b"},
+    "Current THD C": {"Address": 877,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/current/c"},
+    "Current THD N": {"Address": 878,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "conveyorbelt/measurements/thd/current/n"},
+    
+    "Active Power Total": {"Address": 856,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "W","Topic": "conveyorbelt/measurements/power/active/total"},
+    "Reactive Power Total": {"Address": 860,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "VAR","Topic": "conveyorbelt/measurements/power/reactive/total"},
+    "Apparent Power Total": {"Address": 864,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "VA","Topic": "conveyorbelt/measurements/power/apparent/total"},
+    "Power Factor Total": {"Address": 872,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "-","Topic": "conveyorbelt/measurements/fatorpower/total"},
+    
+    "Encoder": {"Address": 885,"Length": 1,"Rights": "RO","Type": "F32","Unity": "RPM","Topic": "conveyorbelt/measurements/encoder"}
+}

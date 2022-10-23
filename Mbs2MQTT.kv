@@ -1,0 +1,866 @@
+#:kivy 2.1.0
+<Content>:
+    ScrollView: 
+        MDList: #Left panel list 
+            OneLineIconListItem:
+                text: "Connection"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.manager.current = "connect_screen"
+                IconLeftWidget:
+                    icon: "connection"
+            OneLineIconListItem:
+                text: "Gateway"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.manager.current = "gateway_screen"
+                IconLeftWidget:
+                    icon: "arrow-expand-all"
+            OneLineIconListItem:
+                text: "MQTT Client"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.manager.current = "mqtt_screen"
+                IconLeftWidget:
+                    icon: 'signal-variant'
+            OneLineIconListItem:
+                text: "ModbusTCP Client"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.manager.current = "modbus_screen"
+                IconLeftWidget:
+                    icon: 'dots-hexagon'
+            OneLineIconListItem:
+                text: "About"
+                on_release:
+                    root.nav_drawer.set_state("close")
+                    root.manager.current = "about_screen"
+                IconLeftWidget:
+                    icon: 'information-outline'
+
+<MyWidget>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDToolbar:
+            id: toolbar
+            pos_hint: {"top":1}
+            spacing: '8dp'
+            elevation: 8 
+            title: "Modbus2MQTT Gateway" 
+            specific_text_color: "black"
+            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+            right_action_items: [["cog", lambda x: root.config(), "Settings"], ["power", lambda x: root.connection(), "Connection"]]
+            Image:
+                id: img_con
+                size_hint_x: 0.13
+                size_hint_y: 0.6
+                adaptive_size: False
+                width: 20
+                source: 'imgs/desconectado.png'
+                pos_hint: {"center_x": 1, "center_y": .5}
+
+        MDScreen:
+            MDNavigationLayout:
+                ScreenManager:
+                    id: screen_manager
+#TELA DE CONEXÃO
+                    MDScreen:
+                        name: "connect_screen"
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MDBottomNavigation: 
+                                panel_color: app.theme_cls.accent_color
+                                text_color_normal: 0.4,0.4,0.4,1
+                                text_color_active: 0.8,0.8,0.8,1
+                                MDBottomNavigationItem:
+                                    name: "mbsconnection"
+                                    text: "MODBUS/TCP"
+                                    icon: "dots-hexagon"
+                                    MDGridLayout:
+                                        rows: 4
+                                        size_hint: (0.5, 0.5)
+                                        spacing: "25dp"
+                                        pos_hint: {"center_x": 0.5, "center_y": 0.6}
+                                        MDLabel:
+                                            size_hint_y: 0.15
+                                            text: 'Modbus Connection'
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                                            font_size: 18
+                                        MDLabel:
+                                            text: ''
+                                        MDTextField:
+                                            id: hostmodbus
+                                            text: '127.0.0.1'
+                                            halign: "center"
+                                            hint_text: "Modbus Address"
+                                            size_hint: (0.2, None)
+                                            height: "60dp"
+                                        MDTextField:
+                                            id: portmodbus
+                                            text: '502'
+                                            halign: "center"
+                                            hint_text: "Modbus Port"
+                                            size_hint: (0.2, None)
+                                            height: "60dp"
+                                MDBottomNavigationItem:
+                                    name: "mqttconnection"
+                                    text: "MQTT"
+                                    icon: "signal-variant"
+                                    MDBoxLayout:
+                                    MDTabs:
+                                        id: tabs
+                                        Tab:
+                                            title: "MQTT configurations"
+                                            MDBoxLayout:
+                                                orientation: 'vertical'
+                                                padding: 15
+                                                spacing: "30dp"
+                                                MDBoxLayout:
+                                                    orientation: 'horizontal'
+                                                    spacing: "30dp"
+                                                    padding: 55, 16
+                                                    MDGridLayout:
+                                                        rows: 2
+                                                        size_hint: (0.5, 0.4)
+                                                        spacing: "25dp"
+                                                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                        MDTextField:
+                                                            id: hostmqtt
+                                                            text: '3.134.40.193'
+                                                            halign: "center"
+                                                            hint_text: "MQTT Server"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                        MDTextField:
+                                                            id: portmqtt
+                                                            text: '1883'
+                                                            halign: "center"
+                                                            hint_text: "MQTT Port"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                    MDGridLayout:
+                                                        rows: 2
+                                                        size_hint: (0.5, 0.4)
+                                                        spacing: "25dp"
+                                                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                        MDTextField:
+                                                            id: hostmqttuser
+                                                            text: 'Leave blank if no security'
+                                                            halign: "center"
+                                                            hint_text: "Username"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                        MDTextField:
+                                                            id: hostmqttpw
+                                                            text: 'Leave blank if no security'
+                                                            halign: "center"
+                                                            hint_text: "Password"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                        Tab:
+                                            title: "AWS IoT"
+                                            MDBoxLayout:
+                                                orientation: 'vertical'
+                                                padding: 15
+                                                spacing: "30dp"
+                                                MDBoxLayout:
+                                                    orientation: 'horizontal'
+                                                    spacing: "30dp"
+                                                    padding: 55, 16
+                                                    MDGridLayout:
+                                                        rows: 3
+                                                        size_hint: (0.5, 0.4)
+                                                        spacing: "25dp"
+                                                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                        MDTextField:
+                                                            id: awsendpoint
+                                                            text: 'a14esw6xzioxj2-ats.iot.us-east-1.amazonaws.com'
+                                                            halign: "center"
+                                                            hint_text: "Endpoint"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                        MDTextField:
+                                                            id: awsport
+                                                            text: '8883'
+                                                            halign: "center"
+                                                            hint_text: "Port"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                        MDTextField:
+                                                            id: awsclientid
+                                                            text: 'Device1'
+                                                            halign: "center"
+                                                            hint_text: "Client ID"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                    MDGridLayout:
+                                                        rows: 3
+                                                        size_hint: (0.5, 0.4)
+                                                        spacing: "25dp"
+                                                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                        MDTextField:
+                                                            id: awscert
+                                                            text: 'D:\\AWS\\esteira_certs\\esteiraic-certificate.pem.crt'
+                                                            halign: "center"
+                                                            hint_text: "Path to Certificate"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                        MDTextField:
+                                                            id: awsprivkey
+                                                            text: 'D:\\AWS\\esteira_certs\\esteiraic-private.pem.key'
+                                                            halign: "center"
+                                                            hint_text: "Path to Private Key"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                        MDTextField:
+                                                            id: awsca1
+                                                            text: 'D:\\AWS\\esteira_certs\\AmazonRootCA1.pem'
+                                                            halign: "center"
+                                                            hint_text: "Path to CA1"
+                                                            size_hint: (0.2, None)
+                                                            height: "60dp"
+                                                MDLabel:
+                                                    text: ''
+                                                    halign: "center"
+                                                    font_size: 10
+                                                MDFloatLayout:
+                                                    size_hint_y: 0.35
+                                                    MDCheckbox:
+                                                        id: checkaws
+                                                        active: True
+                                                        size_hint_x: 0.2
+                                                        halign: "center"
+                                                        pos_hint: {"center_x": 0.46, "center_y": 1}
+                                                    MDLabel:
+                                                        text: 'Use AWS IoT'
+                                                        halign: "center"
+                                                        font_size: 14
+                                                        pos_hint: {"center_x": 0.53, "center_y": 1}
+
+                                MDBottomNavigationItem:
+                                    name: "connection"
+                                    text: "CONNECT"
+                                    icon: "connection"   
+                                    MDFloatLayout:
+                                        MDRoundFlatIconButton:
+                                            id: bt_con
+                                            text: "  CONNECT  "
+                                            icon: 'connection'
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            on_release: root.connection()
+# TELA GATEWAY      
+                    MDScreen:
+                        name: 'gateway_screen'
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MDTabs:
+                                id: tabs2
+                                Tab:
+                                    title:"JSON"
+                                    MDBoxLayout:
+                                        orientation: 'vertical'
+                                        padding: "15dp"
+                                        spacing: "40dp"
+                                        MDLabel:
+                                            text: 'Configure Gateway through JSON'
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            font_size: 18
+                                            height: "2dp"
+                                        MDLabel:
+                                            text: ''
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDTextField:
+                                            id: jsonpath
+                                            text: 'conveyorbelt_vars.json'
+                                            hint_text: "Path to .json file"
+                                            halign: "center"
+                                            size_hint: (0.6, None)
+                                            height: "50dp"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDLabel:
+                                            text: ''
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDFloatLayout:
+                                            size_hint_y: 0.4
+                                            MDCheckbox:
+                                                id: checkjson
+                                                active: True
+                                                size_hint_x: 0.2
+                                                halign: "center"
+                                                pos_hint: {"center_x": 0.438, "center_y": 0.6}
+                                            MDLabel:
+                                                text: 'Use Json File'
+                                                halign: "center"
+                                                font_size: 14
+                                                pos_hint: {"center_x": 0.52, "center_y": 0.6}
+                                        MDLabel:
+                                            text: ''
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            font_size: 20
+                                            height: "6dp"
+                                        
+                                Tab:
+                                    title: "Gates"
+                                    MDTabs:
+                                        id: tabs
+                                        Tab:
+                                            title: "Gate 1"
+                                            MDFloatLayout:
+                                                MDLabel:
+                                                    id: textgateway1
+                                                    text: 'Read from multiple Modbus Registers and Publish to the MQTT Broker:'
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                                                    font_size: 16
+                                                MDTextField:
+                                                    id: modbusaddr1
+                                                    hint_text: "Modbus Starting Address"
+                                                    text: '100'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.7}
+                                                MDTextField:
+                                                    id: lengthpub1
+                                                    hint_text: "Length"
+                                                    text: '1'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.55}
+                                                MDSwitch:
+                                                    id: modbustd1
+                                                    active: False
+                                                    size_hint: (0.05,0.08)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.55, "center_y": 0.42}
+                                                MDLabel:
+                                                    text: 'FLOAT32'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.46, "center_y": 0.42}
+                                                MDTextField:
+                                                    id: topic1
+                                                    hint_text: "Topic to Publish"
+                                                    text: 'topic/gate1'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.25}
+                                                MDCheckbox:
+                                                    id: checkgate1
+                                                    active: False
+                                                    size_hint: (0.1,0.1)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.45, "center_y": 0.1}
+                                                MDLabel:
+                                                    text: 'Use this gate'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.53, "center_y": 0.1}
+                                                    
+                                        Tab:
+                                            title: "Gate 2"
+                                            MDFloatLayout:
+                                                MDLabel:
+                                                    id: textgateway2
+                                                    text: 'Read from multiple Modbus Registers and Publish to the MQTT Broker:'
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                                                    font_size: 16
+                                                MDTextField:
+                                                    id: modbusaddr2
+                                                    hint_text: "Modbus Starting Address"
+                                                    text: '1314'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.7}
+                                                MDTextField:
+                                                    id: lengthpub2
+                                                    hint_text: "Length"
+                                                    text: '1'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.55}
+                                                MDSwitch:
+                                                    id: modbustd2
+                                                    active: False
+                                                    size_hint: (0.05,0.08)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.55, "center_y": 0.42}
+                                                MDLabel:
+                                                    text: 'FLOAT32'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.46, "center_y": 0.42}
+                                                MDTextField:
+                                                    id: topic2
+                                                    hint_text: "Topic to Publish"
+                                                    text: 'topic/gate2'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.25}
+                                                MDCheckbox:
+                                                    id: checkgate2
+                                                    active: False
+                                                    size_hint: (0.1,0.1)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.45, "center_y": 0.1}
+                                                MDLabel:
+                                                    text: 'Use this gate'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.53, "center_y": 0.1}
+                                        Tab:
+                                            title: "Gate 3"
+                                            MDFloatLayout:
+                                                MDLabel:
+                                                    id: textgateway3
+                                                    text: 'Read from multiple Modbus Registers and Publish to the MQTT Broker:'
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                                                    font_size: 16
+                                                MDTextField:
+                                                    id: modbusaddr3
+                                                    hint_text: "Modbus Starting Address"
+                                                    text: '848'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.7}
+                                                MDTextField:
+                                                    id: lengthpub3
+                                                    hint_text: "Length"
+                                                    text: '1'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.55}
+                                                MDSwitch:
+                                                    id: modbustd3
+                                                    active: False
+                                                    size_hint: (0.05,0.08)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.55, "center_y": 0.42}
+                                                MDLabel:
+                                                    text: 'FLOAT32'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.46, "center_y": 0.42}
+                                                MDTextField:
+                                                    id: topic3
+                                                    hint_text: "Topic to Publish"
+                                                    text: 'topic/gate3'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.25}
+                                                MDCheckbox:
+                                                    id: checkgate3
+                                                    active: False
+                                                    size_hint: (0.1,0.1)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.45, "center_y": 0.1}
+                                                MDLabel:
+                                                    text: 'Use this gate'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.53, "center_y": 0.1}
+                                        Tab:
+                                            title: "Gate 4"
+                                            MDFloatLayout:
+                                                MDLabel:
+                                                    id: textgateway4
+                                                    text: 'Read from multiple Modbus Registers and Publish to the MQTT Broker:'
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                                                    font_size: 16
+                                                MDTextField:
+                                                    id: modbusaddr4
+                                                    hint_text: "Modbus Starting Address"
+                                                    text: '849'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.7}
+                                                MDTextField:
+                                                    id: lengthpub4
+                                                    hint_text: "Length"
+                                                    text: '1'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.55}
+                                                MDSwitch:
+                                                    id: modbustd4
+                                                    active: False
+                                                    size_hint: (0.05,0.08)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.55, "center_y": 0.42}
+                                                MDLabel:
+                                                    text: 'FLOAT32'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.46, "center_y": 0.42}
+                                                MDTextField:
+                                                    id: topic4
+                                                    hint_text: "Topic to Publish"
+                                                    text: 'topic/gate4'
+                                                    halign: "center"
+                                                    size_hint: (0.4, None)
+                                                    height: "60dp"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.25}
+                                                MDCheckbox:
+                                                    id: checkgate4
+                                                    active: False
+                                                    size_hint: (0.1,0.1)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.45, "center_y": 0.1}
+                                                MDLabel:
+                                                    text: 'Use this gate'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.53, "center_y": 0.1}
+                                Tab:
+                                    title: "Start"
+                                    MDFloatLayout:
+                                        MDRoundFlatIconButton:
+                                            id: bt_readpub
+                                            text: "Start Reading/Publishing"
+                                            icon: "arrow-collapse-up"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            on_release: root.gateway()
+#TELA MQTT
+                    MDScreen:
+                        name: 'mqtt_screen'
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MDBottomNavigation: 
+                                panel_color: app.theme_cls.accent_color
+                                text_color_normal: 0.4,0.4,0.4,1
+                                text_color_active: 0.8,0.8,0.8,1                                
+#MQTT PUBLISHER                                
+                                MDBottomNavigationItem:
+                                    name: "readpub"
+                                    text: "PUBLISHER"
+                                    icon: "arrow-up-bold-box-outline"
+                                    MDBoxLayout:
+                                        orientation: 'vertical'
+                                        padding: "15dp"
+                                        spacing: "30dp"
+                                        MDLabel:
+                                            id: textpub
+                                            text: 'Publish to a specific topic on MQTT Broker:'
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            font_size: 18
+                                        MDTextField:
+                                            id: msgpub
+                                            hint_text: "Message"
+                                            text: ''
+                                            halign: "center"
+                                            size_hint: (0.4, None)
+                                            height: "60dp"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDTextField:
+                                            id: topic
+                                            hint_text: "Topic to Publish"
+                                            text: 'test/status'
+                                            halign: "center"
+                                            size_hint: (0.4, None)
+                                            height: "60dp"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDBoxLayout:
+                                            orientation: 'vertical'
+                                            padding: "10dp"
+                                            spacing: "20dp"
+                                            MDRoundFlatIconButton:
+                                                id: bt_pub
+                                                text: "Publish"
+                                                icon: "arrow-collapse-up"
+                                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                on_release: 
+                                                    root.pub()
+                                                
+#MQTT SUBSCRIBER
+                                # MDBottomNavigationItem:
+                                #     name: "writesub"
+                                #     text: "SUBSCRIBER"
+                                #     icon: "arrow-down-bold-box-outline"
+                                #     MDBoxLayout:
+                                #         orientation: 'vertical'
+                                #         padding: "15dp"
+                                #         spacing: "30dp"
+                                #         MDLabel:
+                                #             id: textpub
+                                #             text: 'Subscribe to a specific topic on MQTT Broker:'
+                                #             halign: "center"
+                                #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                #             font_size: 18
+                                #         MDTextField:
+                                #             id: topic_sub
+                                #             hint_text: "Topic to Subscribe"
+                                #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                #             text: 'esteira/motor/status'
+                                #             halign: "center"
+                                #             size_hint: (0.4, None)
+                                #             height: "60dp"
+                                #         MDBoxLayout:
+                                #             orientation: 'vertical'
+                                #             padding: "10dp"
+                                #             spacing: "20dp"
+                                #             MDRoundFlatIconButton:
+                                #                 id: bt_subscribe
+                                #                 text: " Subscribe "
+                                #                 icon: "arrow-collapse-down"
+                                #                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                #                 on_release:
+                                #                     root.sub()
+                                #         MDLabel:
+                                #             id: mqtt_message
+                                #             text: 'Message:'
+                                #             halign: "center"
+                                #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                #             font_size: 15
+#TELA MODBUS                
+                    MDScreen:
+                        name: "modbus_screen"
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MDBottomNavigation: 
+                                panel_color: app.theme_cls.accent_color
+                                text_color_normal: 0.4,0.4,0.4,1
+                                text_color_active: 0.8,0.8,0.8,1
+                                MDBottomNavigationItem:
+                                    name: "mbs_write"
+                                    text: "WRITE"
+                                    icon: "pen"
+                                    MDBoxLayout:
+                                        orientation: 'vertical'
+                                        spacing: "30dp"
+                                        padding: 5,10
+                                        MDGridLayout:
+                                            rows: 5
+                                            size_hint: (0.6, 0.5)
+                                            spacing: "25dp"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            MDLabel:
+                                                id: textwrite
+                                                text: 'Perform a specific Modbus write:'
+                                                halign: "center"
+                                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                font_size: 18
+                                            MDTextField:
+                                                id: modbusaddrwrite
+                                                hint_text: "Modbus Address"
+                                                text: '1325'
+                                                halign: "center"
+                                                size_hint: (0.2, None)
+                                                height: "60dp"
+                                            MDTextField:
+                                                id: modbusvaluewrite
+                                                hint_text: "Value"
+                                                text: '1'
+                                                halign: "center"
+                                                size_hint: (0.2, None)
+                                                height: "60dp"
+                                            MDGridLayout:
+                                                cols: 2
+                                                rows: 2
+                                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                MDLabel:
+                                                    text: 'Coil Status'
+                                                    halign: "center"
+                                                    font_size: 12
+                                                MDLabel:
+                                                    text: 'Single Register'
+                                                    halign: "center"
+                                                    font_size: 12
+                                                MDCheckbox:
+                                                    id: checkcoil
+                                                    group: "group"
+                                                MDCheckbox:
+                                                    id: checkregis
+                                                    active: True
+                                                    group: "group"
+                                            MDBoxLayout:
+                                                orientation: 'vertical'
+                                                spacing: "10dp"
+                                                MDRoundFlatIconButton:
+                                                    id: bt_modbus_write
+                                                    text: "Write"
+                                                    icon: "pen"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                    on_release: root.write()
+                                
+                                MDBottomNavigationItem:
+                                    name: "mbs_read"
+                                    text: "READ"
+                                    icon: "monitor-eye"
+                                    MDBoxLayout:
+                                        orientation: 'vertical'
+                                        spacing: "30dp"
+                                        padding: 5,10
+                                        MDGridLayout:
+                                            rows: 6
+                                            size_hint: (0.6, 0.5)
+                                            spacing: "25dp"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            MDLabel:
+                                                id: textread
+                                                text: 'Perform a specific Modbus read:'
+                                                halign: "center"
+                                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                font_size: 18
+                                            MDTextField:
+                                                id: modbusaddrread
+                                                hint_text: "Modbus Starting Address"
+                                                text: '350'
+                                                halign: "center"
+                                                size_hint: (0.2, None)
+                                                height: "60dp"
+                                            MDTextField:
+                                                id: length
+                                                hint_text: "Length"
+                                                text: '1'
+                                                halign: "center"
+                                                size_hint: (0.2, None)
+                                                height: "60dp"
+                                            MDFloatLayout:
+                                                size_hint_y: 0.3
+                                                MDSwitch:
+                                                    id: modbustdisplayF32
+                                                    active: False
+                                                    size_hint: (0.1,0.1)
+                                                    halign: "center"
+                                                    pos_hint: {"center_x": 0.56, "center_y": 0.12}
+                                                MDLabel:
+                                                    text: 'FLOAT32'
+                                                    halign: "center"
+                                                    font_size: 14
+                                                    pos_hint: {"center_x": 0.425, "center_y": 0.12}
+                                            MDLabel:
+                                                id: modbus_reads
+                                                text: 'Read:'
+                                                halign: "center"
+                                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                font_size: 15
+                                            MDBoxLayout:
+                                                orientation: 'vertical'
+                                                spacing: "10dp"
+                                                MDRoundFlatIconButton:
+                                                    id: bt_modbus_read
+                                                    text: "Read"
+                                                    icon: "monitor-eye"
+                                                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                    on_release: root.read()
+#TELA ABOUT
+                    MDScreen:
+                        name: "about_screen"
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            padding: "5dp"
+                            spacing: "2dp"
+                            Image:
+                                source: "imgs/mbs2mqtt.png"
+                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                size_hint: (1,1)
+                            MDLabel:
+                                text: 'Modbus2MQTT Gateway - (Version 2.1 - 2022)'
+                                halign: "center"
+                                size_hint: (0.8,1)
+                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                font_size: 24
+                            MDLabel:
+                                text: "Modbus2MQTT Gateway is an app responsible for communicating between a Modbus/TCP network and a MQTT Broker through Eclipse's paho-mqtt and AWS IoT"
+                                halign: "center"
+                                size_hint: (0.8,1)
+                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                font_size: 16
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                padding: "30dp"
+                                spacing: "1dp"
+                                MDLabel:
+                                    text: 'Developed by: Guilherme Balduino Lopes ©'
+                                    halign: "center"
+                                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                    font_size: 12
+                                MDLabel:
+                                    text: 'Email: guilhermebalopes@ufu.br'
+                                    halign: "center"
+                                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                    font_size: 12           
+# MDNavigationDrawer
+
+                MDNavigationDrawer:
+                    id: nav_drawer
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        spacing: '4dp'
+                        Image:
+                            id: img_menu
+                            source: 'imgs/mbs2mqtt.png'
+                            size_hint_y: 0.18
+                        Content:
+                            manager: screen_manager
+                            nav_drawer: nav_drawer
+                            size_hint_y: 0.77
+                        MDLabel:
+                            text: '© Guilherme Balduino Lopes'
+                            font_size: 14
+                            halign: "center"
+                            size_hint_y: 0.055
+                
+<Tab>:
+
+<ConfigTLS>:
+    title: "Configure TLS"
+    size_hint_y: None
+    size_hint_x: 0.4
+    height: 200
+    BoxLayout:
+        id: layoutt
+        orientation:'vertical'
+        GridLayout:
+            cols: 2
+            rows: 2
+        Label:
+            text: "Endpoint"
+            font_size: 14
+        TextInput:
+            id: txt_endpoint
+            text: "ax7j1tokadxlb-ats.iot.us-east-2.amazonaws.com"
+            font_size: 14
+            halign: "center"
+            valign: "middle"
+        Label:
+            text: "Port"
+            font_size: 14
+        TextInput:
+            id: txt_port
+            text: "8883"
+            font_size: 14
+            halign: "center"
+            valign: "middle"
+        BoxLayout:
+            orientation:'horizontal'
+            Button: 
+                size_hint_y: None
+                height: 40
+                text: "Save"
+            Button: 
+                size_hint_y: None
+                height: 40
+                text: "Cancel"
+                on_release: 
+                    root.dismiss()
+
