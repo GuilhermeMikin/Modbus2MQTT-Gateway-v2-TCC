@@ -1,5 +1,6 @@
 from imports import *
 from mb2mqtt import ClienteMODBUS2MQTT
+from login import LoginApp
 Config.set('kivy', 'exit_on_escape', '0')
 
 
@@ -270,5 +271,6 @@ class Tab(MDFloatLayout, MDTabsBase):
     pass
 
 if __name__ == '__main__':
+    LoginApp()
     Mbs2MQTTApp().run()
 
