@@ -10,6 +10,7 @@ class MyWidget(MDScreen):
     
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.auth_usr = False
 
 
 class LoginApp(MDApp):
@@ -30,8 +31,10 @@ class LoginApp(MDApp):
             self.root.ids.signin_label.text = f'Sup {self.root.ids.user.text}!'
             self.root.ids.signin_label.font_size = 18
             LoginApp().stop()
+            self.auth_usr = True
         else:
             self.root.ids.signin_label.text = f'Authentication Failed!'
+            self.auth_usr = False
         
 
 LoginApp().run() 
