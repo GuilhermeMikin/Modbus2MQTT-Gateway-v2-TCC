@@ -1,8 +1,12 @@
 # Creating the App
 from imports import *
-import main
+import requests
 Config.set('kivy', 'exit_on_escape', '0')
 
+
+url = 'https://api.pwnedpasswords.com/range/' + 'password123'
+res = requests.get(url)
+print(res)
 
 class MyWidget(MDScreen):
     """
@@ -11,7 +15,7 @@ class MyWidget(MDScreen):
     
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.auth_usr = False
+        
 
 
 class LoginApp(MDApp):
