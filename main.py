@@ -10,6 +10,7 @@ class MyWidget(MDScreen):
     """
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.loggedin = False
 
 
     def connection(self): #Function to connnect to the modbus network and stablish a connection with the mqtt broker
@@ -272,7 +273,7 @@ class Tab(MDFloatLayout, MDTabsBase):
 
 if __name__ == '__main__':
     LoginApp()
-    if :
+    if MyWidget.loggedin:
         Mbs2MQTTApp().run()
     
 
