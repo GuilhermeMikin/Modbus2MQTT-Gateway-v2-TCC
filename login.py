@@ -1,6 +1,5 @@
 # Creating the App
 from imports import *
-import main
 Config.set('kivy', 'exit_on_escape', '0')
 
 
