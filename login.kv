@@ -1,0 +1,66 @@
+#:kivy 2.1.0
+Screen:
+
+    MDCard:
+        size_hint: None, None
+        size: 350, 450
+        pos_hint: {"center_x":0.5, "center_y":0.5}
+        elevation: 15
+        padding: 22
+        spacing: 18
+        orientation: 'vertical'
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: '2dp'
+            padding: 25
+            MDLabel:
+                id: welcome_label
+                text: "WELCOME TO"
+                font_size: 18
+                halign: 'center'
+
+            Image:
+                id: mbs2mqtt_image
+                source: "imgs/mbs2mqtt.png"
+                pos_hint: {"center_x": 0.53, "center_y": 0.5}
+                size_hint: 80, 80
+
+            MDLabel:
+                text: ""
+                font_size: 20
+
+            MDLabel:
+                id: signin_label
+                text: "Sign-in to continue"
+                text_color: 1,1,1,1
+                font_size: 12
+                halign: 'center'
+                
+
+        MDTextField:
+            id: user
+            hint_text: "username"
+            icon_right: "account"
+            size_hint_x: None
+            width: 200
+            font_size: 14
+            pos_hint: {"center_x": .5}
+
+        MDTextField:
+            id: password
+            hint_text: "password"
+            icon_right: "eye-off"
+            size_hint_x: None
+            width: 200
+            font_size: 14
+            pos_hint: {"center_x": .5}
+            password: True
+
+        MDFillRoundFlatButton:
+            text: "SIGN-IN"
+            text_color: 1,1,1,1
+            elevation: 10
+            font_size: 16
+            pos_hint: {"center_x": .5}
+            on_press: app.logger()
