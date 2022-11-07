@@ -272,8 +272,9 @@ class Tab(MDFloatLayout, MDTabsBase):
     pass
 
 if __name__ == '__main__':
-    LoginApp()
-    if MyWidget.loggedin:
-        Mbs2MQTTApp().run()
+    Mbs2MQTTApp().run()
+    # LoginApp()
+    # if MyWidget.loggedin:
+    #     Mbs2MQTTApp().run()
     
 
