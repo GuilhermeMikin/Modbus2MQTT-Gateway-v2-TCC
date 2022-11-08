@@ -3,7 +3,7 @@ from pyModbusTCP.client import ModbusClient
 import paho.mqtt.client as mqtt
 from time import sleep
 from datetime import datetime as dt
-from threading import Thread
+import threading 
 import sys
 import AWSIoTPythonSDK.MQTTLib as awsmqtt
 import json

@@ -1,24 +1,17 @@
 from imports import *
 
-class ClienteMODBUS2MQTT():
-    """
-    Classe Cliente MODBUS 
-    """
+class Modbus2MqttClient():
+    """ Main class responsible for the gateway """
     def __init__(self,modbus_server_addr, 
                 modbus_port,mqtt_broker_addr, 
                 mqtt_broker_port,awsiot_endpoint,
                 awsiot_port,aws_client_id, 
                 awsiot_certificate,awsiot_privatekey, 
-                awsiot_rootca1,awsiot_state,scan_time=0.1):
-        """
-        Construtor
-        """
-        self._app = True
+                awsiot_rootca1,awsiot_state):
+        """ Class builder """
+        self._app = True ############### I've made some changes here.. have to test the modbus connection later...
         self._atendimento = None
-        self._scan_time = scan_time
-        self._server_ip = modbus_server_addr
-        self._port = modbus_port
-        self._cliente = ModbusClient(host=modbus_server_addr,
+        self._mbs_client = ModbusClient(host=modbus_server_addr,
                                     port=modbus_port,
                                     unit_id=1)
 
@@ -34,46 +27,43 @@ class ClienteMODBUS2MQTT():
         self._aws_certificate = awsiot_certificate
         self._aws_privatekey = awsiot_privatekey
         self._aws_rootca1 = awsiot_rootca1
-        self._aws_state = awsiot_state
+        self._tls_encryption = awsiot_state
         self._status_conn_mqtt_aws = False
 
-        if self._aws_state:
-            self._client_mqtt = awsmqtt.AWSIoTMQTTClient(self._aws_client_id)
+        if self._tls_encryption:
+            self._mqtt_client = awsmqtt.AWSIoTMQTTClient(self._aws_client_id)
         else:
-            self._client_mqtt = mqtt.Client() 
+            self._mqtt_client = mqtt.Client() 
 
         #Aux variable to the thread responsible for the publishing
         self._thread_publisher = None
         self._publishing_thread = False
 
 
-    def connect_on(self):
-        """
-        Método para primeiras opções do usuário
-        """
+    def ModbusMQTTConnect(self):
+        """ Method actually responsible for connecting to Modbus and MQTT servers """
         try:
-            self._cliente.open()
-            sleep(0.2)
+            self._mbs_client.open()
             print('\nModbus TCP  --> OK')
         except Exception as e: 
-            print('ERROR: ', e.args)
+            print('Modbus Connection ERROR: ', e.args)
 
         try:
-            if self._aws_state == True:
-                self._client_mqtt.configureEndpoint(self._aws_endpoint, 8883)
-                self._client_mqtt.configureCredentials(self._aws_rootca1, self._aws_privatekey, self._aws_certificate)
-                if self._client_mqtt.connect():
+            if self._tls_encryption == True: #If it is a connection with TLS certificates
+                self._mqtt_client.configureEndpoint(self._aws_endpoint, 8883)
+                self._mqtt_client.configureCredentials(self._aws_rootca1, self._aws_privatekey, self._aws_certificate)
+                if self._mqtt_client.connect():
                     msgstatus = dict()
                     msgstatus['Timestamp'] = str(dt.now())
                     msgstatus['Message'] = "Client connected!"
                     msg_json = json.dumps(msgstatus)
-                    self._client_mqtt.publish(topic="test/status", payload=msg_json, QoS= 1)
+                    self._mqtt_client.publish(topic="test/status", payload=msg_json, QoS= 1)
                     print('MQTT Broker --> OK')
                     self._status_conn_mqtt_aws = True
                 else:
-                    print("Unable to establish connection with IoT Core!")
+                    print("Unable to establish connection with the MQTT Broker!")
             else:
-                if self._client_mqtt.connect(self._broker_addrs, self._broker_port, 60) != 0:
+                if self._mqtt_client.connect(self._broker_addrs, self._broker_port, 60) != 0:
                     print("Unable to establish connection with MQTT Broker!")
                     sys.exit(-1)
                 else:
@@ -100,7 +90,7 @@ class ClienteMODBUS2MQTT():
                 pass
             self._publishing_thread = False
             self._subscribing_thread = False
-            self._client_mqtt.disconnect()
+            self._mqtt_client.disconnect()
             self._atendimento = False
             self._app = False
             self._status_conn_mqtt = False
@@ -116,16 +106,16 @@ class ClienteMODBUS2MQTT():
         """
         try:
             if tipo == 1:
-                co = self._cliente.read_coils(addr - 1, leng)
+                co = self._mbs_client.read_coils(addr - 1, leng)
                 return co
             elif tipo == 2:
-                di = self._cliente.read_discrete_inputs(addr - 1, leng)
+                di = self._mbs_client.read_discrete_inputs(addr - 1, leng)
                 return di
             elif tipo == 3:
-                hr = self._cliente.read_holding_registers(addr - 1, leng)
+                hr = self._mbs_client.read_holding_registers(addr - 1, leng)
                 return hr
             elif tipo == 4:
-                ir = self._cliente.read_input_registers(addr - 1, leng)
+                ir = self._mbs_client.read_input_registers(addr - 1, leng)
                 return ir
             else:
                 print('Not Found...')
@@ -143,9 +133,9 @@ class ClienteMODBUS2MQTT():
             listfloat = []
             while i < leng:
                 if tipo == 3:
-                    modbusvalues = self._cliente.read_holding_registers(addr - 1 + g, 2)
+                    modbusvalues = self._mbs_client.read_holding_registers(addr - 1 + g, 2)
                 elif tipo == 4:
-                    modbusvalues = self._cliente.read_input_registers(addr - 1 + g, 2)
+                    modbusvalues = self._mbs_client.read_input_registers(addr - 1 + g, 2)
                 else:
                     print('Data type do not supports F32')
                 for value in modbusvalues:
@@ -183,16 +173,16 @@ class ClienteMODBUS2MQTT():
         except Exception as e:
             print('ERROR converting FLOAT32: ', e.args, f'listfloat var {listfloat} >> {modbusvalues} addr {addr}')
             if tipo == 1:
-                co = self._cliente.read_coils(addr - 1, leng)
+                co = self._mbs_client.read_coils(addr - 1, leng)
                 return co
             elif tipo == 2:
-                di = self._cliente.read_discrete_inputs(addr - 1, leng)
+                di = self._mbs_client.read_discrete_inputs(addr - 1, leng)
                 return di
             elif tipo == 3:
-                hr = self._cliente.read_holding_registers(addr - 1, leng)
+                hr = self._mbs_client.read_holding_registers(addr - 1, leng)
                 return hr
             elif tipo == 4:
-                ir = self._cliente.read_input_registers(addr - 1, leng)
+                ir = self._mbs_client.read_input_registers(addr - 1, leng)
                 return ir
             else:
                 print('Not Found...')
@@ -204,9 +194,9 @@ class ClienteMODBUS2MQTT():
         """
         try:
             if tipo == 1:
-                return self._cliente.write_single_coil(addr - 1, valor)
+                return self._mbs_client.write_single_coil(addr - 1, valor)
             elif tipo == 2:
-                return self._cliente.write_single_register(addr - 1, valor)
+                return self._mbs_client.write_single_register(addr - 1, valor)
             else:
                 print('Invalid writing type..\n')
         except Exception as e:
@@ -379,10 +369,10 @@ class ClienteMODBUS2MQTT():
         Método para publicação MQTT
         """
         try:
-            if self._client_mqtt.connect(self._broker_addrs, self._broker_port, 60) != 0:
+            if self._mqtt_client.connect(self._broker_addrs, self._broker_port, 60) != 0:
                 print("Unable to establish connection with MQTT Broker!")
                 sys.exit(-1)
-            self._client_mqtt.publish(topic, msg)
+            self._mqtt_client.publish(topic, msg)
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to broker, please check IP address and port...')
@@ -394,7 +384,7 @@ class ClienteMODBUS2MQTT():
         Método para publicação MQTT via IoT Core
         """
         try:
-            self._client_mqtt.publish(topic, msg, 1)
+            self._mqtt_client.publish(topic, msg, 1)
             print('.')
         except Exception as e:
             print('ERROR: ', e.args, end='')
