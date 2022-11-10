@@ -10,32 +10,30 @@ class MyWidget(MDScreen):
     """
     def __init__(self, **kw):
         super().__init__(**kw)
-
+                                                        ###### TESTAR CONEXÃO MQTT E MODBUS
 
     def connection(self): #Function to connnect to the modbus network and stablish a connection with the mqtt broker
         """ Main connection method. Responsible for updating the interface and calling the client class connection method"""
         try:
             if self.ids.bt_con.text == "  CONNECT  ": #If the application is disconnected 
                 try:
-                    Window.set_system_cursor("wait")                        #Change the cursor to wainting mode
-                    self._modbus_Addrs = self.ids.hostmodbus.text           #Get the connection parameters from the user input
-                    self._modbus_Port = int(self.ids.portmodbus.text)      
-                    self._mqtt_broker_Addrs = self.ids.hostmqtt.text        
-                    self._mqtt_broker_Port = int(self.ids.portmqtt.text)    
-                    self._mqtt_broker_user = self.ids.hostmqttuser.text     
-                    self._mqtt_broker_pw = self.ids.hostmqttpw.text        
-                    self._awsiot_endpoint = self.ids.awsendpoint.text
-                    self._awsiot_port = int(self.ids.awsport.text)
-                    self._awsiot_client_id = self.ids.awsclientid.text
-                    self._awsiot_path_to_certificate = self.ids.awscert.text 
-                    self._awsiot_path_to_private_key = self.ids.awsprivkey.text 
-                    self._awsiot_path_to_amazon_root_ca1 = self.ids.awsca1.text 
-                    self._tls_encryption = (True if self.ids.check_tls.active else False)
-                    self._mb2mqttClient = Modbus2MqttClient(self._modbus_Addrs,self._modbus_Port, #Pass the arguments to the Modbus2MQRR Client's constructor class
-                                                  self._mqtt_broker_Addrs,self._mqtt_broker_Port,
-                                                 self._awsiot_endpoint,self._awsiot_port,self._awsiot_client_id,
-                                                 self._awsiot_path_to_certificate,self._awsiot_path_to_private_key,
-                                                 self._awsiot_path_to_amazon_root_ca1,self._tls_encryption)
+                    Window.set_system_cursor("wait")  #Change the cursor to wainting mode
+                    connection_params = { #Get the connection parameters from the user input
+                        'modbus_Addrs' : self.ids.hostmodbus.text,
+                        'modbus_Port' : int(self.ids.portmodbus.text),      
+                        'mqtt_broker_Addrs' : self.ids.hostmqtt.text,       
+                        'mqtt_broker_Port' : int(self.ids.portmqtt.text),
+                        'mqtt_broker_user' : self.ids.hostmqttuser.text,
+                        'mqtt_broker_pw' : self.ids.hostmqttpw.text,  
+                        'awsiot_endpoint' : self.ids.awsendpoint.text,
+                        'awsiot_port' : int(self.ids.awsport.text),
+                        'awsiot_client_id' : self.ids.awsclientid.text,
+                        'awsiot_path_to_certificate' : self.ids.awscert.text,
+                        'awsiot_path_to_private_key' : self.ids.awsprivkey.text,
+                        'awsiot_path_to_amazon_root_ca1' : self.ids.awsca1.text,
+                        'tls_encryption' : (True if self.ids.check_tls.active else False)
+                        }
+                    self._mb2mqttClient = Modbus2MqttClient(**connection_params) #Pass the arguments to the Modbus2MQRR Client's constructor class
                     self._mb2mqttClient.ModbusMQTTConnect() #Calls the newly created client connection function
                     self.ids.bt_con.text = "DISCONNECT"   #After connected, it changes the button text to "disconnect"
                     if self._mb2mqttClient._status_conn_mqtt == True or self._mb2mqttClient._status_conn_mqtt_aws == True: #If it has successfully connected
@@ -89,7 +87,7 @@ class MyWidget(MDScreen):
                 mqtt_pub_topic4 = self.ids.topic4.text
                 try:
                     self._mb2mqttClient._publishing_thread = True
-                    self._mb2mqttClient._thread_publisher = Thread(target=self._mb2mqttClient.mbs2mqttGateway, args=(
+                    self._mb2mqttClient._thread_publisher = threading.Thread(target=self._mb2mqttClient.mbs2mqttGateway, args=(
                         modbus_type,modbus_read_addr1,modbus_read_length1,
                         modbus_read_addr2,modbus_read_length2,
                         modbus_read_addr3,modbus_read_length3,
@@ -150,7 +148,7 @@ class MyWidget(MDScreen):
                 mqtt_sub_topic = self.ids.topic_sub.text
                 try:
                     self._mb2mqttClient._subscribing_thread = True
-                    self._mb2mqttClient._thread_subscriber = Thread(target=self._mb2mqttClient.mqttSubscriber, args=(mqtt_sub_topic))
+                    self._mb2mqttClient._thread_subscriber = threading.Thread(target=self._mb2mqttClient.mqttSubscriber, args=(mqtt_sub_topic))
                     self._mb2mqttClient._thread_subscriber.start()
                     Snackbar(text = f"Subscribed to topic {mqtt_sub_topic} successfully...", bg_color=(0,1,0,1), size_hint_y=0.05).open()
                     Window.set_system_cursor("arrow")
@@ -273,9 +271,8 @@ class Tab(MDFloatLayout, MDTabsBase):
 
 if __name__ == '__main__':
     # application_thread = threading.Thread(target=Mbs2MQTTApp().run(), name='GUI')
-     Mbs2MQTTApp().run()
+    Mbs2MQTTApp().run()
     # LoginApp()
     # if MyWidget.loggedin:
     #     Mbs2MQTTApp().run()
     
-

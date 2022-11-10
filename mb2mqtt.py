@@ -2,32 +2,25 @@ from imports import *
 
 class Modbus2MqttClient():
     """ Main class responsible for the gateway """
-    def __init__(self,modbus_server_addr, 
-                modbus_port,mqtt_broker_addr, 
-                mqtt_broker_port,awsiot_endpoint,
-                awsiot_port,aws_client_id, 
-                awsiot_certificate,awsiot_privatekey, 
-                awsiot_rootca1,awsiot_state):
+    def __init__(self, **kw):
         """ Class builder """
-        self._app = True ############### I've made some changes here.. have to test the modbus connection later...
+        self._app = True
         self._atendimento = None
-        self._mbs_client = ModbusClient(host=modbus_server_addr,
-                                    port=modbus_port,
-                                    unit_id=1)
-
+        self._mbs_client = ModbusClient(host=kw['modbus_Addrs'], port=kw['modbus_Port'], unit_id=1)
+ 
         #Mosquitto Broker and Paho-MQTT
-        self._broker_addrs = mqtt_broker_addr
-        self._broker_port = mqtt_broker_port
+        self._broker_addrs = kw['mqtt_broker_Addrs']
+        self._broker_port = kw['mqtt_broker_Port']
         self._status_conn_mqtt = False
 
-        #AWS IoT Core
-        self._aws_client_id = aws_client_id
-        self._aws_endpoint = awsiot_endpoint
-        self._aws_port = awsiot_port
-        self._aws_certificate = awsiot_certificate
-        self._aws_privatekey = awsiot_privatekey
-        self._aws_rootca1 = awsiot_rootca1
-        self._tls_encryption = awsiot_state
+        #AWS IoT Core SDK
+        self._aws_client_id = kw['awsiot_client_id']
+        self._aws_endpoint = kw['awsiot_endpoint']
+        self._aws_port = kw['awsiot_port']
+        self._aws_certificate = kw['awsiot_path_to_certificate']
+        self._aws_privatekey = kw['awsiot_path_to_private_key']
+        self._aws_rootca1 = kw['awsiot_path_to_amazon_root_ca1']
+        self._tls_encryption = kw['tls_encryption']
         self._status_conn_mqtt_aws = False
 
         if self._tls_encryption:
@@ -35,7 +28,7 @@ class Modbus2MqttClient():
         else:
             self._mqtt_client = mqtt.Client() 
 
-        #Aux variable to the thread responsible for the publishing
+        #Aux variables to the thread responsible for the publishing
         self._thread_publisher = None
         self._publishing_thread = False
 
