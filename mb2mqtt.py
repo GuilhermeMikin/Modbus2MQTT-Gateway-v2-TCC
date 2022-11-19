@@ -60,7 +60,11 @@ class Modbus2MqttClient():
                     print("Unable to establish connection with MQTT Broker!")
                     sys.exit(-1)
                 else:
-                    self.mqttPublisher(topic="test/status", msg="Client connected!")
+                    msgstatus = dict()
+                    msgstatus['Timestamp'] = str(dt.now())
+                    msgstatus['Message'] = "Client connected!"
+                    msg_json = json.dumps(msgstatus)
+                    self.mqttPublisher(topic="test/status", msg=msg_json)
                     print('MQTT Broker --> OK')
                     self._status_conn_mqtt = True
         except Exception as e: 
