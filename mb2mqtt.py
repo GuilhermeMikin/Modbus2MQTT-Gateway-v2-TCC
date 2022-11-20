@@ -1,4 +1,5 @@
 from imports import *
+from mqtt.mqtt_sub import MQTTSubscriber
 
 class Modbus2MqttClient():
     """ Main class responsible for the gateway """
@@ -87,7 +88,7 @@ class Modbus2MqttClient():
                     #Creates the thread responsible for the main subscription
                     try:
                         self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe)
+                        self._thread_subscriber = threading.Thread(target=self.subscribe, args=self._mqtt_client)
                         self._thread_subscriber.start()
                         # self._thread_subscriber.join()
                         print('Successfully subscribed to topic status...')
@@ -420,14 +421,16 @@ class Modbus2MqttClient():
 
 
     def subscribe(self):
-        def on_message(client, userdata, msg):
-            self.locker.acquire()
-            self.mqttPublisher("test/subscription","Payload received...")
-            print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
-            self.locker.release()
+        mqtt_sub_thread = threading.Thread(target=MQTTSubscriber.subscribe())
+        mqtt_sub_thread.start()
+        # def on_message(client, userdata, msg):
+        #     self.locker.acquire()
+        #     self.mqttPublisher("test/subscription","Payload received...")
+        #     print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        #     self.locker.release()
 
-        self._mqtt_client.subscribe("status")
-        self._mqtt_client.on_message = on_message
+        # self._mqtt_client.subscribe("status")
+        # self._mqtt_client.on_message = on_message
 
 
 
