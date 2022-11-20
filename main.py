@@ -34,7 +34,14 @@ class MyWidget(MDScreen):
                         'tls_encryption' : (True if self.ids.check_tls.active else False)
                         }
                     self._mb2mqttClient = Modbus2MqttClient(**connection_params) #Pass the arguments to the Modbus2MQRR Client's constructor class
-                    self._mb2mqttClient.ModbusMQTTConnect() #Calls the newly created client connection function
+                    # self._mb2mqttClient.ModbusMQTTConnect() #Calls the newly created client connection function
+                    ######
+                    self._mb2mqttClient._connecting_thread = True
+                    self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect)
+                    self._mb2mqttClient._thread_connection.start()
+                    # self._mb2mqttClient._thread_connection.join()
+                    ######
+                    sleep(3)
                     self.ids.bt_con.text = "DISCONNECT"   #After connected, it changes the button text to "disconnect"
                     if self._mb2mqttClient._status_conn_mqtt == True or self._mb2mqttClient._status_conn_mqtt_aws == True: #If it has successfully connected
                         Snackbar(text = "Successfully connected!", bg_color=(0,1,0,1)).open()
@@ -51,6 +58,7 @@ class MyWidget(MDScreen):
                 self.ids.img_con.source = 'imgs/desconectado.png'
                 Snackbar(text = "Client disconnected!", bg_color=(1,0,0,1)).open()
                 self._mb2mqttClient.disconnect()
+                # self._mb2mqttClient._thread_connection.stop()
             else:
                 Snackbar(text = "Something went wrong!", bg_color=(1,0,0,1)).open()
         except Exception as e:
@@ -270,8 +278,10 @@ class Tab(MDFloatLayout, MDTabsBase):
     pass
 
 if __name__ == '__main__':
-    # application_thread = threading.Thread(target=Mbs2MQTTApp().run(), name='GUI')
-    Mbs2MQTTApp().run()
+    application_thread = threading.Thread(target=Mbs2MQTTApp().run(), name='GUI')
+    application_thread.start()
+    application_thread.join()
+    # Mbs2MQTTApp().run()
     # LoginApp()
     # if MyWidget.loggedin:
     #     Mbs2MQTTApp().run()

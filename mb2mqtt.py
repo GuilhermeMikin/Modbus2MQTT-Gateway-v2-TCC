@@ -28,9 +28,19 @@ class Modbus2MqttClient():
         else:
             self._mqtt_client = mqtt.Client() 
 
+        #Aux variables to the thread responsible for the connection
+        self._thread_connection = None
+        self._connected_thread = False
+
+        #Aux variables to the thread responsible for the subscription
+        self._thread_subscriber = None
+        self._subscribed_thread = False
+
         #Aux variables to the thread responsible for the publishing
         self._thread_publisher = None
         self._publishing_thread = False
+
+        self.locker = threading.Lock()
 
 
     def ModbusMQTTConnect(self):
@@ -50,8 +60,16 @@ class Modbus2MqttClient():
                     msgstatus['Timestamp'] = str(dt.now())
                     msgstatus['Message'] = "Client connected!"
                     msg_json = json.dumps(msgstatus)
-                    self._mqtt_client.publish(topic="test/status", payload=msg_json, QoS= 1)
-                    print('MQTT Broker --> OK')
+                    self._mqtt_client.publish(topic="connection/status", payload=msg_json, QoS= 1)
+                    
+                    #Creates the thread responsible for the main subscription
+                    self._subscribed_thread = True
+                    # self._thread_subscriber = threading.Thread(target=self.subscribe, args="status")
+                    # self._thread_subscriber.start()
+                    print('Subscribed to topic status...')
+                    # self._thread_subscriber.join()
+                    
+                    print('MQTT ---------> OK')
                     self._status_conn_mqtt_aws = True
                 else:
                     print("Unable to establish connection with the MQTT Broker!")
@@ -64,8 +82,19 @@ class Modbus2MqttClient():
                     msgstatus['Timestamp'] = str(dt.now())
                     msgstatus['Message'] = "Client connected!"
                     msg_json = json.dumps(msgstatus)
-                    self.mqttPublisher(topic="test/status", msg=msg_json)
-                    print('MQTT Broker --> OK')
+                    self.mqttPublisher(topic="connection/status", msg=msg_json)
+
+                    #Creates the thread responsible for the main subscription
+                    try:
+                        self._subscribed_thread = True
+                        self._thread_subscriber = threading.Thread(target=self.subscribe)
+                        self._thread_subscriber.start()
+                        # self._thread_subscriber.join()
+                        print('Successfully subscribed to topic status...')
+                    except Exception as e: 
+                        print('Subscription ERROR: ', e.args)
+
+                    print('MQTT ---------> OK')
                     self._status_conn_mqtt = True
         except Exception as e: 
             print('MQTT ERROR: ', e.args)
@@ -80,11 +109,12 @@ class Modbus2MqttClient():
             msgstatus['Message'] = "Client disconnected!"
             msg_json = json.dumps(msgstatus)
             if self._status_conn_mqtt:
-                self.mqttPublisher(topic="test/status", msg=msg_json)
+                self.mqttPublisher(topic="connection/status", msg=msg_json)
             elif self._status_conn_mqtt_aws:
-                self.awsMqttPublisher(topic="test/status", msg=msg_json)
+                self.awsMqttPublisher(topic="connection/status", msg=msg_json)
             else:
                 pass
+            self._connecting_thread = False
             self._publishing_thread = False
             self._subscribing_thread = False
             self._mqtt_client.disconnect()
@@ -387,6 +417,18 @@ class Modbus2MqttClient():
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to AWS IoT, please check the configs...')
             self._status_conn_mqtt_aws = False
+
+
+    def subscribe(self):
+        def on_message(client, userdata, msg):
+            self.locker.acquire()
+            self.mqttPublisher("test/subscription","Payload received...")
+            print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+            self.locker.release()
+
+        self._mqtt_client.subscribe("status")
+        self._mqtt_client.on_message = on_message
+
 
 
 

@@ -175,7 +175,7 @@
                                                         pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                                         MDTextField:
                                                             id: awsendpoint
-                                                            text: 'a14esw6xzioxj2-ats.iot.us-east-1.amazonaws.com'
+                                                            text: 'a13zffjlim5dan-ats.iot.us-east-1.amazonaws.com'
                                                             halign: "center"
                                                             hint_text: "Endpoint"
                                                             size_hint: (0.2, None)
@@ -201,21 +201,21 @@
                                                         pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                                         MDTextField:
                                                             id: awscert
-                                                            text: 'D:\\AWS\\esteira_certs\\esteiraic-certificate.pem.crt'
+                                                            text: 'D:\\AWS\\mbs2mqtt_certs\\modbus2mqtt-certificate.pem.crt'
                                                             halign: "center"
                                                             hint_text: "Path to Certificate"
                                                             size_hint: (0.2, None)
                                                             height: "60dp"
                                                         MDTextField:
                                                             id: awsprivkey
-                                                            text: 'D:\\AWS\\esteira_certs\\esteiraic-private.pem.key'
+                                                            text: 'D:\\AWS\\mbs2mqtt_certs\\modbus2mqtt-private.pem.key'
                                                             halign: "center"
                                                             hint_text: "Path to Private Key"
                                                             size_hint: (0.2, None)
                                                             height: "60dp"
                                                         MDTextField:
                                                             id: awsca1
-                                                            text: 'D:\\AWS\\esteira_certs\\AmazonRootCA1.pem'
+                                                            text: 'D:\\AWS\\mbs2mqtt_certs\\AmazonRootCA1.pem'
                                                             halign: "center"
                                                             hint_text: "Path to CA1"
                                                             size_hint: (0.2, None)
@@ -228,7 +228,7 @@
                                                     size_hint_y: 0.35
                                                     MDCheckbox:
                                                         id: check_tls
-                                                        active: False
+                                                        active: True
                                                         size_hint_x: 0.2
                                                         halign: "center"
                                                         pos_hint: {"center_x": 0.46, "center_y": 1}
