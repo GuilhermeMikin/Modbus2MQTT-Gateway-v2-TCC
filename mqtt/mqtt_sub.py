@@ -9,27 +9,35 @@ class MQTTSubscriber():
         """ Class builder """
         self._mqtt_broker = 'localhost' #kw['mqtt_host']
         self._port = 1883
+        self.client = mqtt.Client()
 
     
     def subscribe(self):
+        print('wii')
         def on_message(client, userdata, msg):
-            print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
-
-        client = mqtt.Client()
-        client.on_message = on_message
-        if client.connect(self._mqtt_broker, self._port, 60) !=0:
-            print("\nCould not connect to MQTT Broker!")
-            sys.exit(-1)
-        else:
-            print("\nSub Client connected...")
-
-        topic = 'status'
-        client.subscribe(topic)
-
+            print(f"Received '{msg.payload.decode()}' from '{msg.topic}' topic")
+        
         try:
-            # print("\nSuccessfully Subscribed! Press CTRL+C to exit...\n")
-            client.loop_forever()
-        except:
-            print("\nDisconnecting from broker...\n")
+            # self.client = mqtt.Client()
+            self.client.on_message = on_message
+            if self.client.connect(self._mqtt_broker, self._port, 60) !=0:
+                print("\nCould not connect to MQTT Broker!")
+                sys.exit(-1)
+            else:
+                print("\nSub Client connected...")
 
-        client.disconnect()
+            topic = 'status'
+            self.client.subscribe(topic)
+        except Exception as e: 
+            print('MQTT ERROR: ', e.args)
+
+        # try:
+        #     self.client.loop_start()
+        # except:
+        #     print("\nDisconnecting from broker...\n")
+
+    # def disconnect_sub(self):
+        # sleep(1)
+        # self.client.loop_stop()
+        # self.client.disconnect()
+        # print( 'bye')

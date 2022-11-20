@@ -36,6 +36,7 @@ class Modbus2MqttClient():
         #Aux variables to the thread responsible for the subscription
         self._thread_subscriber = None
         self._subscribed_thread = False
+        self._mqtt_sub_thread = MQTTSubscriber()
 
         #Aux variables to the thread responsible for the publishing
         self._thread_publisher = None
@@ -88,8 +89,9 @@ class Modbus2MqttClient():
                     #Creates the thread responsible for the main subscription
                     try:
                         self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe, args=self._mqtt_client)
+                        self._thread_subscriber = threading.Thread(target=self.subscribe())
                         self._thread_subscriber.start()
+                        self._mqtt_sub_thread.client.loop_start()
                         # self._thread_subscriber.join()
                         print('Successfully subscribed to topic status...')
                     except Exception as e: 
@@ -118,6 +120,8 @@ class Modbus2MqttClient():
             self._connecting_thread = False
             self._publishing_thread = False
             self._subscribing_thread = False
+            self._mqtt_sub_thread.client.loop_stop()
+            self._mqtt_sub_thread.client.disconnect()
             self._mqtt_client.disconnect()
             self._atendimento = False
             self._app = False
@@ -421,8 +425,13 @@ class Modbus2MqttClient():
 
 
     def subscribe(self):
-        mqtt_sub_thread = threading.Thread(target=MQTTSubscriber.subscribe())
-        mqtt_sub_thread.start()
+        self._mqtt_sub_thread.subscribe()
+        
+
+
+        # mqtt_sub_thread = threading.Thread(target=MQTTSubscriber.subscribe)
+        # mqtt_sub_thread.start()
+        
         # def on_message(client, userdata, msg):
         #     self.locker.acquire()
         #     self.mqttPublisher("test/subscription","Payload received...")
