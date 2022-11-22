@@ -37,7 +37,7 @@ class MyWidget(MDScreen):
                     # self._mb2mqttClient.ModbusMQTTConnect() #Calls the newly created client connection function
                     ######
                     self._mb2mqttClient._connecting_thread = True
-                    self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect)
+                    self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect, name='Thred Connection')
                     self._mb2mqttClient._thread_connection.start()
                     # self._mb2mqttClient._thread_connection.join()
                     ######
@@ -95,7 +95,7 @@ class MyWidget(MDScreen):
                 mqtt_pub_topic4 = self.ids.topic4.text
                 try:
                     self._mb2mqttClient._publishing_thread = True
-                    self._mb2mqttClient._thread_publisher = threading.Thread(target=self._mb2mqttClient.mbs2mqttGateway, args=(
+                    self._mb2mqttClient._thread_publisher = threading.Thread(target=self._mb2mqttClient.mbs2mqttGateway, name='Thread Gateway',args=(
                         modbus_type,modbus_read_addr1,modbus_read_length1,
                         modbus_read_addr2,modbus_read_length2,
                         modbus_read_addr3,modbus_read_length3,
@@ -278,7 +278,7 @@ class Tab(MDFloatLayout, MDTabsBase):
     pass
 
 if __name__ == '__main__':
-    application_thread = threading.Thread(target=Mbs2MQTTApp().run(), name='GUI')
+    application_thread = threading.Thread(target=Mbs2MQTTApp().run(), name='Thread GUI')
     application_thread.start()
     application_thread.join()
     # Mbs2MQTTApp().run()

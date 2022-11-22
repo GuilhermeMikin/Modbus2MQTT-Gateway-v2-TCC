@@ -65,11 +65,15 @@ class Modbus2MqttClient():
                     self._mqtt_client.publish(topic="connection/status", payload=msg_json, QoS= 1)
                     
                     #Creates the thread responsible for the main subscription
-                    self._subscribed_thread = True
-                    # self._thread_subscriber = threading.Thread(target=self.subscribe, args="status")
-                    # self._thread_subscriber.start()
-                    print('Subscribed to topic status...')
-                    # self._thread_subscriber.join()
+                    try:
+                        self._subscribed_thread = True
+                        self._thread_subscriber = threading.Thread(target=self.subscribe(), name='Thread Subscriber (TLS)')
+                        self._thread_subscriber.start()
+                        self._mqtt_sub_thread._mqtt_client.loop_start()
+                        # self._thread_subscriber.join()
+                        print('Successfully subscribed to topic status with tls encryption...')
+                    except Exception as e: 
+                        print('Subscription ERROR: ', e.args)
                     
                     print('MQTT ---------> OK')
                     self._status_conn_mqtt_aws = True
@@ -89,11 +93,11 @@ class Modbus2MqttClient():
                     #Creates the thread responsible for the main subscription
                     try:
                         self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe())
+                        self._thread_subscriber = threading.Thread(target=self.subscribe(), name='Thread Subscriber')
                         self._thread_subscriber.start()
-                        self._mqtt_sub_thread.client.loop_start()
+                        self._mqtt_sub_thread._mqtt_client.loop_start()
                         # self._thread_subscriber.join()
-                        print('Successfully subscribed to topic status...')
+                        print('Successfully subscribed to topic status in localhost...')
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
 
@@ -120,8 +124,8 @@ class Modbus2MqttClient():
             self._connecting_thread = False
             self._publishing_thread = False
             self._subscribing_thread = False
-            self._mqtt_sub_thread.client.loop_stop()
-            self._mqtt_sub_thread.client.disconnect()
+            self._mqtt_sub_thread._mqtt_client.loop_stop()
+            self._mqtt_sub_thread._mqtt_client.disconnect()
             self._mqtt_client.disconnect()
             self._atendimento = False
             self._app = False
@@ -249,6 +253,8 @@ class Modbus2MqttClient():
         Método para leitura modbus e publicação mqtt
         """
         try:
+            self.locker.acquire()
+            #### COLOCAR UM IF JSON CHECK
             try:
                 with open(json_file_path) as file:
                     data = json.load(file)
@@ -380,6 +386,7 @@ class Modbus2MqttClient():
                                     sleep(1)
                     except Exception as e:
                         print(f'ERROR json {msg_json}: ', e.args, end='')
+            self.locker.release()
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to broker, please check IP address and port...')
@@ -417,7 +424,6 @@ class Modbus2MqttClient():
         """
         try:
             self._mqtt_client.publish(topic, msg, 1)
-            print('.')
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to AWS IoT, please check the configs...')
