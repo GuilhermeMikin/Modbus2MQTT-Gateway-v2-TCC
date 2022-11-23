@@ -10,7 +10,7 @@ class MyWidget(MDScreen):
     """
     def __init__(self, **kw):
         super().__init__(**kw)
-                                                        ###### TESTAR CONEXÃO MQTT E MODBUS
+                                                    
 
     def connection(self): #Function to connnect to the modbus network and stablish a connection with the mqtt broker
         """ Main connection method. Responsible for updating the interface and calling the client class connection method"""

@@ -254,19 +254,6 @@ class Modbus2MqttClient():
         """
         try:
             self.locker.acquire()
-            #### COLOCAR UM IF JSON CHECK
-            try:
-                with open(json_file_path) as file:
-                    data = json.load(file)
-                if self._status_conn_mqtt:
-                    self.mqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
-                elif self._status_conn_mqtt_aws:
-                    self.awsMqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
-                else:
-                    print('Problem with the MQTT connection...')
-                    sleep(1)
-            except Exception as e:
-                print('ERROR reading Json: ', e.args, end='')
             while self._publishing_thread:
                 if manual_gates[0]:
                     if type_display1:
@@ -357,6 +344,18 @@ class Modbus2MqttClient():
                         print('Problem with the MQTT connection...')
                         sleep(1)
                 if json_gates:
+                    try:
+                        with open(json_file_path) as file:
+                            data = json.load(file)
+                        if self._status_conn_mqtt:
+                            self.mqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
+                        elif self._status_conn_mqtt_aws:
+                            self.awsMqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
+                        else:
+                            print('Problem with the MQTT connection...')
+                            sleep(1)
+                    except Exception as e:
+                        print('ERROR reading Json: ', e.args, end='')
                     try:
                         for var in data:
                             if var == 'System Description':
