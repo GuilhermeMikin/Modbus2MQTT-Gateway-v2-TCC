@@ -1,7 +1,7 @@
 {    
     "System Description": {"System":"Conveyor Belt","Motor":"High Performance Electric Motor","Model": "HB64548","Type": "Induction Motor - Cage","Protection": "IP55","RatedPower": "1.10 kW (1.50 CV)","RatedVoltages": "220/380 V","RatedCurrents": "4.00/2.32 A","NominalFrequency":"60 Hz","RatedRotationSpeed":"3400 RPM","Topic": "system_description"},
 
-    "Driver Indication": {"Address": 1217,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3,},"Topic": "mbs2mqttopic/conveyorbelt/starterdriver"},
+    "Driver Indication": {"Address": 1217,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3},"Topic": "mbs2mqttopic/conveyorbelt/starterdriver"},
     "Status ATV31": {"Address": 1313,"Length": 1,"Rights": "RW","Type": "BITS","Unity": "-","Topic": "mbs2mqttopic/conveyorbelt/motor/status"},
     
     "Set Point Inversor": {"Address": 1314,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "Hz","Topic": "mbs2mqttopic/conveyorbelt/measurements/frequency"},

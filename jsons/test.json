@@ -1,0 +1,21 @@
+{    
+    "System Description": 
+    {
+        "System":"Conveyor Belt","RatedRotationSpeed":"3400 RPM","Topic": "system_description"
+    },
+
+    "Modbus2MQTT" : 
+    {
+        "Driver Indication": {"Address": 1200,"Length": 1,"Rights": "RW","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3},"Topic": "teste_pub_bool"},
+    
+        "Voltage AB": {"Address": 1202,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "teste_pub_uint16"}
+    },
+
+    "MQTT2Modbus" : 
+    {
+        "Driver Indication": {"Address": 1200,"Length": 1,"Rights": "RW","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3},"Topic": "teste_pub_bool"},
+    
+        "Motor": {"Address": 1206,"Length": 1,"Rights": "WO","Type": "BOOL","Unity": "-","Topic": "teste_pub_uint16"}
+    }
+
+ }
