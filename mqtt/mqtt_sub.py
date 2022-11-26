@@ -8,7 +8,7 @@ class MQTTSubscriber():
     def __init__(self, mqttClient):
         """ Class builder """
         busy.acquire()
-        self._mqtt_client = mqttClient
+        self._mqtt_subscriber_client = mqttClient
         busy.release()
 
     
@@ -19,9 +19,11 @@ class MQTTSubscriber():
 
 
         try:
-            self._mqtt_client.on_message = on_message
-            self._mqtt_client.subscribe(topic)
+            self._mqtt_subscriber_client.on_message = on_message
+            subscription_return = self._mqtt_subscriber_client.subscribe(topic)
             print(f'Subscribed to topic: {topic}')
+            return subscription_return
         except Exception as e: 
             print('MQTT ERROR: ', e.args)
+        
         

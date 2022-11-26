@@ -39,6 +39,7 @@ class Modbus2MqttClient():
         self._mqtt_sub_thread = MQTTSubscriber(self._mqtt_client)
         self._mqtt2modbus_params = None
         self._default_sub_topic = "status"
+        self._gateway_subscribed_thread = False
 
         #Aux variables to the thread responsible for the publishing
         self._thread_publisher = None
@@ -73,8 +74,8 @@ class Modbus2MqttClient():
                         self._subscribed_thread = True
                         self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber (TLS)', args=(self._default_sub_topic,))
                         self._thread_subscriber.start()
-                        self._mqtt_sub_thread._mqtt_client.loop_start()
-                        self._thread_subscriber.join()
+                        self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+                        pass
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
                     
@@ -97,9 +98,10 @@ class Modbus2MqttClient():
                     #Creates the thread responsible for the main subscription
                     try:
                         self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber', args=(self._default_sub_topic,))
-                        self._thread_subscriber.start()
-                        self._mqtt_sub_thread._mqtt_client.loop_start()
+                        # self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber', args=(self._default_sub_topic,))
+                        # self._thread_subscriber.start()
+                        # self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+                        self.subscribe(topic=self._default_sub_topic, thread_name='Main Subscriber Thread')
                         pass
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
@@ -124,8 +126,8 @@ class Modbus2MqttClient():
             self._connecting_thread = False
             self._publishing_thread = False
             self._subscribing_thread = False
-            self._mqtt_sub_thread._mqtt_client.loop_stop()
-            self._mqtt_sub_thread._mqtt_client.disconnect()
+            self._mqtt_sub_thread._mqtt_subscriber_client.loop_stop()
+            self._mqtt_sub_thread._mqtt_subscriber_client.disconnect()
             self._mqtt_client.disconnect()
             self._atendimento = False
             self._app = False
@@ -395,6 +397,26 @@ class Modbus2MqttClient():
                                 self._mqtt2modbus_params = mqtt2modbus
                             else:
                                 print('pass')
+                        try:
+                            topic_gw = 'test/gw'
+                            if not self._gateway_subscribed_thread:
+                                self._gateway_subscribed_thread = True
+                                self.subscribe(topic='test', thread_name='Gateway Subscriber Thread')
+                                # self._subscribed_thread = True
+                                # self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber', args=(self._default_sub_topic,))
+                                # self._thread_subscriber.start()
+                                # if self._mqtt_client.connect():
+                                # self._mqtt_client.loop_start()
+                                # self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+
+                            #     print('aoe')
+                            #     self._thread_gateway_subscriber = threading.Thread(target=self.subscribe, name='Thread GW Subscriber', args=(topic_gw,))
+                            #     self._thread_gateway_subscriber.start()
+                            # self._mqtt_sub_thread._mqtt_client.loop_start()
+                                print('GW-Subscriber client created AND INICIATED')
+                            pass
+                        except Exception as e: 
+                            print('Subscription ERROR: ', e.args)
                     except Exception as e:
                         print(f'ERROR json {msg_json}: ', e.args, end='')
             self.locker.release()
@@ -441,8 +463,12 @@ class Modbus2MqttClient():
             self._status_conn_mqtt_aws = False
 
 
-    def subscribe(self, topic):
-        self._mqtt_sub_thread.subscribe(topic)
+    def subscribe(self, topic, thread_name):
+        print('dusdhsuhdsudh')
+        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
+        self._thread_subscriber.start()
+        self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+        return print('ok')
         
 
 

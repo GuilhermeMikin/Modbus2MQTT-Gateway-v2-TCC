@@ -111,20 +111,19 @@ class MyWidget(MDScreen):
                     except Exception as e: 
                         Window.set_system_cursor("arrow")
                         print('ERROR creating gateway thread: ', e.args)
-                    try:   
-                        n = random.randint(1,4)
-                        topic2 = f'status{n}'
-                        # mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
-                        self._mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
-                        self._thread_gw_subscriber = threading.Thread(target=self._mb2mqttClient.subscribe, name='Thread GW Subscriber', args=(topic2,))
-                        self._thread_gw_subscriber.start()
-                        self._mqtt_gw_sub_thread._mqtt_client.loop_start()
-                        print('GW-Subscriber client created AND INICIATED')
-                        # self._mqtt_gw_sub_thread._mqtt_client.loop_start()
-                    except Exception as e: 
-                        Window.set_system_cursor("arrow")
-                        self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
-                        print('ERROR creating gateway-subscriber thread: ', e.args)
+                    # try:   
+                    #     topic2 = f'test'
+                    #     # mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
+                    #     # self._mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
+                    #     # self._thread_gw_subscriber = threading.Thread(target=self._mb2mqttClient.subscribe, name='Thread GW Subscriber', args=(topic2,))
+                    #     # self._thread_gw_subscriber.start()
+                    #     # self._mqtt_gw_sub_thread._mqtt_client.loop_start()
+                    #     # print('GW-Subscriber client created AND INICIATED')
+                    #     # self._mqtt_gw_sub_thread._mqtt_client.loop_start()
+                    # except Exception as e: 
+                    #     Window.set_system_cursor("arrow")
+                    #     # self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
+                    #     print('ERROR creating gateway-subscriber thread: ', e.args)
                 except Exception as e: 
                     Window.set_system_cursor("arrow")
                     print('ERROR: ', e.args)
@@ -134,7 +133,7 @@ class MyWidget(MDScreen):
                     self.ids.bt_readpub.text = "Start Reading/Publishing"
                     self._mb2mqttClient._publishing_thread = False
                     # mqtt_gw_sub_thread._mqtt_client.loop_stop()
-                    self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
+                    # self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
                     Snackbar(text = f"Stopping reading...", bg_color=(1,0,0,1), size_hint_y=0.05).open()
                 except Exception as e:
                     print('ERROR: ', e.args)
