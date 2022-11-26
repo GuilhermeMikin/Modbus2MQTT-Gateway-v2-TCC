@@ -23,6 +23,7 @@ class Modbus2MqttClient():
         self._aws_rootca1 = kw['awsiot_path_to_amazon_root_ca1']
         self._tls_encryption = kw['tls_encryption']
         self._status_conn_mqtt_aws = False
+        
 
         if self._tls_encryption:
             self._mqtt_client = awsmqtt.AWSIoTMQTTClient(self._aws_client_id)
@@ -44,9 +45,10 @@ class Modbus2MqttClient():
         #Aux variables to the thread responsible for the publishing
         self._thread_publisher = None
         self._publishing_thread = False
+        self._description_sent = False
         
 
-        self.locker = threading.Lock()
+        self.locker = threading.RLock()
 
 
     def ModbusMQTTConnect(self):
@@ -259,7 +261,7 @@ class Modbus2MqttClient():
         Método para leitura modbus e publicação mqtt
         """
         try:
-            self.locker.acquire()
+            # self.locker.acquire()
             while self._publishing_thread:
                 if manual_gates[0]:
                     if type_display1:
@@ -350,18 +352,20 @@ class Modbus2MqttClient():
                         print('Problem with the MQTT connection...')
                         sleep(1)
                 if json_gates:
-                    try:
-                        with open(json_file_path) as file:
-                            data = json.load(file)
-                        if self._status_conn_mqtt:
-                            self.mqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
-                        elif self._status_conn_mqtt_aws:
-                            self.awsMqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
-                        else:
-                            print('Problem with the MQTT connection...')
-                            sleep(1)
-                    except Exception as e:
-                        print('ERROR reading Json: ', e.args, end='')
+                    if not self._description_sent:
+                        self._description_sent = True
+                        try:
+                            with open(json_file_path) as file:
+                                data = json.load(file)
+                            if self._status_conn_mqtt:
+                                self.mqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
+                            elif self._status_conn_mqtt_aws:
+                                self.awsMqttPublisher(topic=data["System Description"]['Topic'], msg=json.dumps(data["System Description"]))
+                            else:
+                                print('Problem with the MQTT connection...')
+                                sleep(1)
+                        except Exception as e:
+                            print('ERROR reading Json: ', e.args, end='')
                     try:
                         for parameter in data:
                             if parameter == 'System Description':
@@ -401,25 +405,14 @@ class Modbus2MqttClient():
                             topic_gw = 'test/gw'
                             if not self._gateway_subscribed_thread:
                                 self._gateway_subscribed_thread = True
-                                self.subscribe(topic='test', thread_name='Gateway Subscriber Thread')
-                                # self._subscribed_thread = True
-                                # self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber', args=(self._default_sub_topic,))
-                                # self._thread_subscriber.start()
-                                # if self._mqtt_client.connect():
-                                # self._mqtt_client.loop_start()
-                                # self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
-
-                            #     print('aoe')
-                            #     self._thread_gateway_subscriber = threading.Thread(target=self.subscribe, name='Thread GW Subscriber', args=(topic_gw,))
-                            #     self._thread_gateway_subscriber.start()
-                            # self._mqtt_sub_thread._mqtt_client.loop_start()
+                                self.subscribe(topic=topic_gw, thread_name='Gateway Subscriber Thread')
                                 print('GW-Subscriber client created AND INICIATED')
                             pass
                         except Exception as e: 
                             print('Subscription ERROR: ', e.args)
                     except Exception as e:
                         print(f'ERROR json {msg_json}: ', e.args, end='')
-            self.locker.release()
+            # self.locker.release()
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to broker, please check IP address and port...')
@@ -441,10 +434,12 @@ class Modbus2MqttClient():
         Método para publicação MQTT
         """
         try:
-            if self._mqtt_client.connect(self._broker_addrs, self._broker_port, 60) != 0:
-                print("Unable to establish connection with MQTT Broker!")
-                sys.exit(-1)
+            # if self.locker.acquire(blocking=False):
+                # if self._mqtt_client.connect(self._broker_addrs, self._broker_port, 60) != 0:
+                #     print("Unable to establish connection with MQTT Broker!")
+                #     sys.exit(-1)
             self._mqtt_client.publish(topic, msg)
+                # self.locker.release()
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to broker, please check IP address and port...')
@@ -464,11 +459,9 @@ class Modbus2MqttClient():
 
 
     def subscribe(self, topic, thread_name):
-        print('dusdhsuhdsudh')
         self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
         self._thread_subscriber.start()
         self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
-        return print('ok')
         
 
 
