@@ -36,11 +36,14 @@ class Modbus2MqttClient():
         #Aux variables to the thread responsible for the subscription
         self._thread_subscriber = None
         self._subscribed_thread = False
-        self._mqtt_sub_thread = MQTTSubscriber()
+        self._mqtt_sub_thread = MQTTSubscriber(self._mqtt_client)
+        self._mqtt2modbus_params = None
+        self._default_sub_topic = "status"
 
         #Aux variables to the thread responsible for the publishing
         self._thread_publisher = None
         self._publishing_thread = False
+        
 
         self.locker = threading.Lock()
 
@@ -48,6 +51,7 @@ class Modbus2MqttClient():
     def ModbusMQTTConnect(self):
         """ Method actually responsible for connecting to Modbus and MQTT servers """
         try:
+            print('\nConnecting Modbus2MQTT Gateway Client...')
             self._mbs_client.open()
             print('\nModbus TCP  --> OK')
         except Exception as e: 
@@ -62,20 +66,19 @@ class Modbus2MqttClient():
                     msgstatus['Timestamp'] = str(dt.now())
                     msgstatus['Message'] = "Client connected!"
                     msg_json = json.dumps(msgstatus)
-                    self._mqtt_client.publish(topic="connection/status", payload=msg_json, QoS= 1)
+                    self._mqtt_client.publish(topic="status/connection", payload=msg_json, QoS= 1)
                     
                     #Creates the thread responsible for the main subscription
                     try:
                         self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe(), name='Thread Subscriber (TLS)')
+                        self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber (TLS)', args=(self._default_sub_topic,))
                         self._thread_subscriber.start()
                         self._mqtt_sub_thread._mqtt_client.loop_start()
-                        # self._thread_subscriber.join()
-                        print('Successfully subscribed to topic status with tls encryption...')
+                        self._thread_subscriber.join()
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
                     
-                    print('MQTT ---------> OK')
+                    print('MQTT ---------> OK\n')
                     self._status_conn_mqtt_aws = True
                 else:
                     print("Unable to establish connection with the MQTT Broker!")
@@ -88,21 +91,18 @@ class Modbus2MqttClient():
                     msgstatus['Timestamp'] = str(dt.now())
                     msgstatus['Message'] = "Client connected!"
                     msg_json = json.dumps(msgstatus)
-                    self.mqttPublisher(topic="connection/status", msg=msg_json)
-
+                    self.mqttPublisher(topic="status/connection", msg=msg_json)
+                    print('MQTT ---------> OK\n')
+                    self._status_conn_mqtt = True
                     #Creates the thread responsible for the main subscription
                     try:
                         self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe(), name='Thread Subscriber')
+                        self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber', args=(self._default_sub_topic,))
                         self._thread_subscriber.start()
                         self._mqtt_sub_thread._mqtt_client.loop_start()
-                        # self._thread_subscriber.join()
-                        print('Successfully subscribed to topic status in localhost...')
+                        pass
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
-
-                    print('MQTT ---------> OK')
-                    self._status_conn_mqtt = True
         except Exception as e: 
             print('MQTT ERROR: ', e.args)
             print("\nUnable to establish connection with MQTT Broker!\nCheck if the IP Address is OK and try again...")
@@ -116,9 +116,9 @@ class Modbus2MqttClient():
             msgstatus['Message'] = "Client disconnected!"
             msg_json = json.dumps(msgstatus)
             if self._status_conn_mqtt:
-                self.mqttPublisher(topic="connection/status", msg=msg_json)
+                self.mqttPublisher(topic="status/connection", msg=msg_json)
             elif self._status_conn_mqtt_aws:
-                self.awsMqttPublisher(topic="connection/status", msg=msg_json)
+                self.awsMqttPublisher(topic="status/connection", msg=msg_json)
             else:
                 pass
             self._connecting_thread = False
@@ -143,18 +143,20 @@ class Modbus2MqttClient():
         try:
             if tipo == 1:
                 co = self._mbs_client.read_coils(addr - 1, leng)
+                # print(f'Modbus message "{co}" was successfully read from address {addr}')
                 return co
             elif tipo == 2:
                 di = self._mbs_client.read_discrete_inputs(addr - 1, leng)
+                # print(f'Modbus message "{di}" was successfully read from address {addr}')
                 return di
             elif tipo == 3:
                 hr = self._mbs_client.read_holding_registers(addr - 1, leng)
+                # print(f'Modbus message "{hr}" was successfully read from address {addr}')
                 return hr
             elif tipo == 4:
                 ir = self._mbs_client.read_input_registers(addr - 1, leng)
+                # print(f'Modbus message "{ir}" was successfully read from address {addr}')
                 return ir
-            else:
-                print('Not Found...')
         except Exception as e:
             print('ERROR reading Mbs Data: ', e.args)
 
@@ -230,11 +232,13 @@ class Modbus2MqttClient():
         """
         try:
             if tipo == 1:
-                return self._mbs_client.write_single_coil(addr - 1, valor)
+                write = self._mbs_client.write_single_coil(addr - 1, valor)
+                # print(f'Modbus message "{valor}" successfully written in address {addr}')
+                return write
             elif tipo == 2:
-                return self._mbs_client.write_single_register(addr - 1, valor)
-            else:
-                print('Invalid writing type..\n')
+                write = self._mbs_client.write_single_register(addr - 1, valor)
+                # print(f'Modbus message "{valor}" successfully written in address {addr}')
+                return write
         except Exception as e:
             print('ERROR writing mbs message: ', e.args)
 
@@ -357,32 +361,40 @@ class Modbus2MqttClient():
                     except Exception as e:
                         print('ERROR reading Json: ', e.args, end='')
                     try:
-                        for var in data:
-                            if var == 'System Description':
+                        for parameter in data:
+                            if parameter == 'System Description':
                                 pass
+                            elif parameter == 'Modbus2MQTT':
+                                modbus2mqtt = data["Modbus2MQTT"]
+                                for var in modbus2mqtt:
+                                    if str(modbus2mqtt[var]["Type"]) == 'F32':
+                                        modbusValues = self.readMbsF32Data(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
+                                    else:
+                                        modbusValues = self.readMbsData(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
+                                    msg_dict = dict()
+                                    msg_dict['Timestamp'] = str(dt.now())
+                                    msg_dict['Physical Quantity'] = var
+                                    msg_dict['Value'] = self.cleanMessage(modbusValues)
+                                    msg_dict['Unity'] = modbus2mqtt[var]['Unity']
+                                    msg_dict['Modbus Address'] = int(modbus2mqtt[var]['Address'])
+                                    msg_dict['Modbus Length'] = modbus2mqtt[var]['Length']
+                                    msg_dict['Modbus Function Code'] = modbus_type
+                                    msg_dict['Modbus modbus2mqtt Display'] = modbus2mqtt[var]['Type']
+                                    msg_dict['MQTT Topic'] = modbus2mqtt[var]['Topic']
+                                    msg_json = json.dumps(msg_dict)
+                                    if self._status_conn_mqtt:
+                                        self.mqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
+                                    elif self._status_conn_mqtt_aws:
+                                        self.awsMqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
+                                    else:
+                                        print('Problem with the MQTT connection...')
+                                        sleep(1)
+                            elif parameter == 'MQTT2Modbus':
+                                ''' Parameterization of mqtt subscription and modbus writing '''
+                                mqtt2modbus = data["MQTT2Modbus"]
+                                self._mqtt2modbus_params = mqtt2modbus
                             else:
-                                if str(data[var]['Type']) == 'F32':
-                                    modbusValues = self.readMbsF32Data(int(modbus_type),int(data[var]['Address']),data[var]['Length'])
-                                else:
-                                    modbusValues = self.readMbsData(int(modbus_type),int(data[var]['Address']),data[var]['Length'])
-                                msg_dict = dict()
-                                msg_dict['Timestamp'] = str(dt.now())
-                                msg_dict['Physical Quantity'] = var
-                                msg_dict['Value'] = self.cleanMessage(modbusValues)
-                                msg_dict['Unity'] = data[var]['Unity']
-                                msg_dict['Modbus Address'] = int(data[var]['Address'])
-                                msg_dict['Modbus Length'] = data[var]['Length']
-                                msg_dict['Modbus Function Code'] = modbus_type
-                                msg_dict['Modbus Data Display'] = data[var]['Type']
-                                msg_dict['MQTT Topic'] = data[var]['Topic']
-                                msg_json = json.dumps(msg_dict)
-                                if self._status_conn_mqtt:
-                                    self.mqttPublisher(topic=data[var]['Topic'], msg=msg_json)
-                                elif self._status_conn_mqtt_aws:
-                                    self.awsMqttPublisher(topic=data[var]['Topic'], msg=msg_json)
-                                else:
-                                    print('Problem with the MQTT connection...')
-                                    sleep(1)
+                                print('pass')
                     except Exception as e:
                         print(f'ERROR json {msg_json}: ', e.args, end='')
             self.locker.release()
@@ -429,22 +441,9 @@ class Modbus2MqttClient():
             self._status_conn_mqtt_aws = False
 
 
-    def subscribe(self):
-        self._mqtt_sub_thread.subscribe()
+    def subscribe(self, topic):
+        self._mqtt_sub_thread.subscribe(topic)
         
-
-
-        # mqtt_sub_thread = threading.Thread(target=MQTTSubscriber.subscribe)
-        # mqtt_sub_thread.start()
-        
-        # def on_message(client, userdata, msg):
-        #     self.locker.acquire()
-        #     self.mqttPublisher("test/subscription","Payload received...")
-        #     print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
-        #     self.locker.release()
-
-        # self._mqtt_client.subscribe("status")
-        # self._mqtt_client.on_message = on_message
 
 
 

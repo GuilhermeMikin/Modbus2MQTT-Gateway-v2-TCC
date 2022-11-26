@@ -1,5 +1,6 @@
 from imports import *
 from mb2mqtt import Modbus2MqttClient
+from mqtt.mqtt_sub import MQTTSubscriber
 # from login import LoginApp 
 Config.set('kivy', 'exit_on_escape', '0')
 
@@ -39,8 +40,6 @@ class MyWidget(MDScreen):
                     self._mb2mqttClient._connecting_thread = True
                     self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect, name='Thred Connection')
                     self._mb2mqttClient._thread_connection.start()
-                    # self._mb2mqttClient._thread_connection.join()
-                    ######
                     sleep(3)
                     self.ids.bt_con.text = "DISCONNECT"   #After connected, it changes the button text to "disconnect"
                     if self._mb2mqttClient._status_conn_mqtt == True or self._mb2mqttClient._status_conn_mqtt_aws == True: #If it has successfully connected
@@ -94,28 +93,48 @@ class MyWidget(MDScreen):
                 modbus_type_display4 = self.ids.modbustd4.active
                 mqtt_pub_topic4 = self.ids.topic4.text
                 try:
-                    self._mb2mqttClient._publishing_thread = True
-                    self._mb2mqttClient._thread_publisher = threading.Thread(target=self._mb2mqttClient.mbs2mqttGateway, name='Thread Gateway',args=(
-                        modbus_type,modbus_read_addr1,modbus_read_length1,
-                        modbus_read_addr2,modbus_read_length2,
-                        modbus_read_addr3,modbus_read_length3,
-                        modbus_read_addr4,modbus_read_length4,
-                        mqtt_pub_topic1,mqtt_pub_topic2,
-                        mqtt_pub_topic3,mqtt_pub_topic4,
-                        manual_gates, json_gates, json_file_path,
-                        modbus_type_display1,modbus_type_display2,
-                        modbus_type_display3,modbus_type_display4))
-                    self._mb2mqttClient._thread_publisher.start()
-                    Snackbar(text = f"Reading has started and data is being published to the specified topic...", bg_color=(0,1,0,1), size_hint_y=0.05).open()
-                    Window.set_system_cursor("arrow")
+                    try:
+                        self._mb2mqttClient._publishing_thread = True
+                        self._mb2mqttClient._thread_publisher = threading.Thread(target=self._mb2mqttClient.mbs2mqttGateway, name='Thread Gateway',args=(
+                            modbus_type,modbus_read_addr1,modbus_read_length1,
+                            modbus_read_addr2,modbus_read_length2,
+                            modbus_read_addr3,modbus_read_length3,
+                            modbus_read_addr4,modbus_read_length4,
+                            mqtt_pub_topic1,mqtt_pub_topic2,
+                            mqtt_pub_topic3,mqtt_pub_topic4,
+                            manual_gates, json_gates, json_file_path,
+                            modbus_type_display1,modbus_type_display2,
+                            modbus_type_display3,modbus_type_display4))
+                        self._mb2mqttClient._thread_publisher.start()
+                        Snackbar(text = f"Reading has started and data is being published to the specified topic...", bg_color=(0,1,0,1), size_hint_y=0.05).open()
+                        Window.set_system_cursor("arrow")
+                    except Exception as e: 
+                        Window.set_system_cursor("arrow")
+                        print('ERROR creating gateway thread: ', e.args)
+                    try:   
+                        n = random.randint(1,4)
+                        topic2 = f'status{n}'
+                        # mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
+                        self._mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
+                        self._thread_gw_subscriber = threading.Thread(target=self._mb2mqttClient.subscribe, name='Thread GW Subscriber', args=(topic2,))
+                        self._thread_gw_subscriber.start()
+                        self._mqtt_gw_sub_thread._mqtt_client.loop_start()
+                        print('GW-Subscriber client created AND INICIATED')
+                        # self._mqtt_gw_sub_thread._mqtt_client.loop_start()
+                    except Exception as e: 
+                        Window.set_system_cursor("arrow")
+                        self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
+                        print('ERROR creating gateway-subscriber thread: ', e.args)
                 except Exception as e: 
                     Window.set_system_cursor("arrow")
                     print('ERROR: ', e.args)
-                    Snackbar(text = f"Could not start reading! ERROR: {e.args}...", bg_color=(1,0,0,1)).open()
+                    Snackbar(text = f"Could not start gateway! ERROR: {e.args}...", bg_color=(1,0,0,1)).open()
             else:
                 try:
                     self.ids.bt_readpub.text = "Start Reading/Publishing"
                     self._mb2mqttClient._publishing_thread = False
+                    # mqtt_gw_sub_thread._mqtt_client.loop_stop()
+                    self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
                     Snackbar(text = f"Stopping reading...", bg_color=(1,0,0,1), size_hint_y=0.05).open()
                 except Exception as e:
                     print('ERROR: ', e.args)
