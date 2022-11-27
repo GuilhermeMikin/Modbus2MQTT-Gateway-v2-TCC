@@ -28,7 +28,7 @@ class Modbus2MqttClient():
         if self._tls_encryption:
             self._mqtt_client = awsmqtt.AWSIoTMQTTClient(self._aws_client_id)
         else:
-            self._mqtt_client = mqtt.Client() 
+            self._mqtt_client = mqtt.Client()
 
         #Aux variables to the thread responsible for the connection
         self._thread_connection = None
@@ -37,7 +37,7 @@ class Modbus2MqttClient():
         #Aux variables to the thread responsible for the subscription
         self._thread_subscriber = None
         self._subscribed_thread = False
-        self._mqtt_sub_thread = MQTTSubscriber(self._mqtt_client)
+        self._mqtt_sub_thread = MQTTSubscriber(self._mqtt_client, self._mbs_client)
         self._mqtt2modbus_params = None
         self._default_sub_topic = "status"
         self._gateway_subscribed_thread = False
@@ -459,7 +459,7 @@ class Modbus2MqttClient():
 
 
     def subscribe(self, topic, thread_name):
-        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
+        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,self._mbs_client))
         self._thread_subscriber.start()
         self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
         

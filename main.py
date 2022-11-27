@@ -40,7 +40,7 @@ class MyWidget(MDScreen):
                     self._mb2mqttClient._connecting_thread = True
                     self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect, name='Thred Connection')
                     self._mb2mqttClient._thread_connection.start()
-                    sleep(3)
+                    sleep(2)
                     self.ids.bt_con.text = "DISCONNECT"   #After connected, it changes the button text to "disconnect"
                     if self._mb2mqttClient._status_conn_mqtt == True or self._mb2mqttClient._status_conn_mqtt_aws == True: #If it has successfully connected
                         Snackbar(text = "Successfully connected!", bg_color=(0,1,0,1)).open()
