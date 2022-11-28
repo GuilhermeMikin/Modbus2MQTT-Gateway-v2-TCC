@@ -291,13 +291,21 @@ class Modbus2MqttClient():
                                         for var in mqtt2modbus:    
                                             topic = mqtt2modbus[var]['Topic']
                                             modbus_addr = mqtt2modbus[var]['Address']
-                                            # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
-                                            # print('JSON GW-Subscriber client created AND INICIATED')
+                                            if self._status_connection_mqtt:
+                                                # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
+                                                # print('JSON GW-Subscriber client created AND INICIATED')
+                                                pass
+                                            elif self._status_connection_mqtt_tls:
+                                                # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
+                                                # print('JSON GW-Subscriber client created AND INICIATED')
+                                                pass
+                                            else:
+                                                print('Problem with the MQTT connection...')
                                             print(f'Write msg from topic {topic} in modbus addrs {modbus_addr}')
                                 except Exception as e: 
                                     print('ERROR in mqtt2modbus subscriptions: ', e.args)
                         try:
-                            topic_gw = 'test/gw'
+                            topic_gw = 'status/gateway'
                             if not self._gateway_subscribed_thread:
                                 self._gateway_subscribed_thread = True
                                 self.subscribe(topic=topic_gw, thread_name='Gateway Subscriber Thread')
