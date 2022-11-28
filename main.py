@@ -34,9 +34,7 @@ class MyWidget(MDScreen):
                         'awsiot_path_to_amazon_root_ca1' : self.ids.awsca1.text,
                         'tls_encryption' : (True if self.ids.check_tls.active else False)
                         }
-                    self._mb2mqttClient = Modbus2MqttClient(**connection_params) #Pass the arguments to the Modbus2MQRR Client's constructor class
-                    # self._mb2mqttClient.ModbusMQTTConnect() #Calls the newly created client connection function
-                    ######
+                    self._mb2mqttClient = Modbus2MqttClient(**connection_params) #Pass the arguments to the Modbus2MQTT Client's constructor class
                     self._mb2mqttClient._connecting_thread = True
                     self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect, name='Thred Connection')
                     self._mb2mqttClient._thread_connection.start()
@@ -57,7 +55,6 @@ class MyWidget(MDScreen):
                 self.ids.img_con.source = 'imgs/desconectado.png'
                 Snackbar(text = "Client disconnected!", bg_color=(1,0,0,1)).open()
                 self._mb2mqttClient.disconnect()
-                # self._mb2mqttClient._thread_connection.stop()
             else:
                 Snackbar(text = "Something went wrong!", bg_color=(1,0,0,1)).open()
         except Exception as e:
@@ -111,19 +108,6 @@ class MyWidget(MDScreen):
                     except Exception as e: 
                         Window.set_system_cursor("arrow")
                         print('ERROR creating gateway thread: ', e.args)
-                    # try:   
-                    #     topic2 = f'test'
-                    #     # mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
-                    #     # self._mqtt_gw_sub_thread = MQTTSubscriber(self._mb2mqttClient._mqtt_client)
-                    #     # self._thread_gw_subscriber = threading.Thread(target=self._mb2mqttClient.subscribe, name='Thread GW Subscriber', args=(topic2,))
-                    #     # self._thread_gw_subscriber.start()
-                    #     # self._mqtt_gw_sub_thread._mqtt_client.loop_start()
-                    #     # print('GW-Subscriber client created AND INICIATED')
-                    #     # self._mqtt_gw_sub_thread._mqtt_client.loop_start()
-                    # except Exception as e: 
-                    #     Window.set_system_cursor("arrow")
-                    #     # self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
-                    #     print('ERROR creating gateway-subscriber thread: ', e.args)
                 except Exception as e: 
                     Window.set_system_cursor("arrow")
                     print('ERROR: ', e.args)
@@ -132,8 +116,6 @@ class MyWidget(MDScreen):
                 try:
                     self.ids.bt_readpub.text = "Start Reading/Publishing"
                     self._mb2mqttClient._publishing_thread = False
-                    # mqtt_gw_sub_thread._mqtt_client.loop_stop()
-                    # self._mqtt_gw_sub_thread._mqtt_client.loop_stop()
                     Snackbar(text = f"Stopping reading...", bg_color=(1,0,0,1), size_hint_y=0.05).open()
                 except Exception as e:
                     print('ERROR: ', e.args)
