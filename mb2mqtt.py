@@ -84,6 +84,13 @@ class Modbus2MqttClient():
                     
                     print('MQTT ---------> OK\n')
                     self._status_conn_mqtt_aws = True
+                    #Creates the thread responsible for the main subscription with TLS Encryption
+                    try:
+                        self._subscribed_thread = True
+                        self.subscribe(topic=self._default_sub_topic, thread_name='Main Subscriber Thread')
+                        pass
+                    except Exception as e: 
+                        print('Subscription ERROR: ', e.args)
                 else:
                     print("Unable to establish connection with the MQTT Broker!")
             else:
@@ -98,7 +105,7 @@ class Modbus2MqttClient():
                     self.mqttPublisher(topic="status/connection", msg=msg_json)
                     print('MQTT ---------> OK\n')
                     self._status_conn_mqtt = True
-                    #Creates the thread responsible for the main subscription
+                    #Creates the thread responsible for the main subscription without TLS
                     try:
                         self._subscribed_thread = True
                         self.subscribe(topic=self._default_sub_topic, thread_name='Main Subscriber Thread')
