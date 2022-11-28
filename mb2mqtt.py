@@ -125,6 +125,7 @@ class Modbus2MqttClient():
             else:
                 self._mqtt_sub_thread._mqtt_subscriber_client.loop_stop()
             self._mqtt_client.disconnect()
+            self._mqtt2modbus_thread = False
             self._atendimento = False
             self._app = False
             self._status_connection_mqtt = False
