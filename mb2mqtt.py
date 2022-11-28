@@ -296,7 +296,7 @@ class Modbus2MqttClient():
                                                 # print('JSON GW-Subscriber client created AND INICIATED')
                                                 pass
                                             elif self._status_connection_mqtt_tls:
-                                                # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
+                                                # self.subscribeTLS(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
                                                 # print('JSON GW-Subscriber client created AND INICIATED')
                                                 pass
                                             else:
