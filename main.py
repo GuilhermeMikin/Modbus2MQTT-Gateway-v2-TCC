@@ -40,7 +40,7 @@ class MyWidget(MDScreen):
                     self._mb2mqttClient._thread_connection.start()
                     sleep(2)
                     self.ids.bt_con.text = "DISCONNECT"   #After connected, it changes the button text to "disconnect"
-                    if self._mb2mqttClient._status_conn_mqtt == True or self._mb2mqttClient._status_conn_mqtt_aws == True: #If it has successfully connected
+                    if self._mb2mqttClient._status_connection_mqtt == True or self._mb2mqttClient._status_connection_mqtt_tls == True: #If it has successfully connected
                         Snackbar(text = "Successfully connected!", bg_color=(0,1,0,1)).open()
                     else:
                         Snackbar(text = "Modbus connected successfully, but a connection to the MQTT Broker could not be established...", bg_color=(0,0,1,1)).open()
@@ -130,11 +130,11 @@ class MyWidget(MDScreen):
             mqtt_pub_msg = self.ids.msgpub.text
             mqtt_pub_topic = self.ids.topic.text
             try:
-                if self._mb2mqttClient._status_conn_mqtt:
+                if self._mb2mqttClient._status_connection_mqtt:
                     self._mb2mqttClient.mqttPublisher(topic=mqtt_pub_topic, msg=mqtt_pub_msg)
                     Snackbar(text = f"Message successfully published to topic {mqtt_pub_topic}...", bg_color=(0,1,0,1), size_hint_y=0.05).open()
                     Window.set_system_cursor("arrow")
-                elif self._mb2mqttClient._status_conn_mqtt_aws:
+                elif self._mb2mqttClient._status_connection_mqtt_tls:
                     self._mb2mqttClient.awsMqttPublisher(topic=mqtt_pub_topic, msg=mqtt_pub_msg)
                     Snackbar(text = f"Message successfully published to topic {mqtt_pub_topic}...", bg_color=(0,1,0,1), size_hint_y=0.05).open()
                     Window.set_system_cursor("arrow")

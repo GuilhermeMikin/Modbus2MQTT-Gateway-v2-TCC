@@ -63,7 +63,10 @@
             MDNavigationLayout:
                 ScreenManager:
                     id: screen_manager
+
+
 #TELA DE CONEXÃO
+
                     MDScreen:
                         name: "connect_screen"
                         MDBoxLayout:
@@ -72,37 +75,6 @@
                                 panel_color: app.theme_cls.accent_color
                                 text_color_normal: 0.4,0.4,0.4,1
                                 text_color_active: 0.8,0.8,0.8,1
-                                MDBottomNavigationItem:
-                                    name: "mbsconnection"
-                                    text: "MODBUS/TCP"
-                                    icon: "dots-hexagon"
-                                    MDGridLayout:
-                                        rows: 4
-                                        size_hint: (0.5, 0.5)
-                                        spacing: "25dp"
-                                        pos_hint: {"center_x": 0.5, "center_y": 0.6}
-                                        MDLabel:
-                                            size_hint_y: 0.15
-                                            text: 'Modbus Connection'
-                                            halign: "center"
-                                            pos_hint: {"center_x": 0.5, "center_y": 0.9}
-                                            font_size: 18
-                                        MDLabel:
-                                            text: ''
-                                        MDTextField:
-                                            id: hostmodbus
-                                            text: '127.0.0.1'
-                                            halign: "center"
-                                            hint_text: "Modbus Address"
-                                            size_hint: (0.2, None)
-                                            height: "60dp"
-                                        MDTextField:
-                                            id: portmodbus
-                                            text: '502'
-                                            halign: "center"
-                                            hint_text: "Modbus Port"
-                                            size_hint: (0.2, None)
-                                            height: "60dp"
                                 MDBottomNavigationItem:
                                     name: "mqttconnection"
                                     text: "MQTT"
@@ -237,7 +209,38 @@
                                                         halign: "center"
                                                         font_size: 14
                                                         pos_hint: {"center_x": 0.53, "center_y": 1}
-
+                                MDBottomNavigationItem:
+                                    name: "mbsconnection"
+                                    text: "MODBUS/TCP"
+                                    icon: "dots-hexagon"
+                                    MDGridLayout:
+                                        rows: 4
+                                        size_hint: (0.5, 0.5)
+                                        spacing: "25dp"
+                                        pos_hint: {"center_x": 0.5, "center_y": 0.6}
+                                        MDLabel:
+                                            size_hint_y: 0.15
+                                            text: 'Modbus Connection'
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                                            font_size: 18
+                                        MDLabel:
+                                            text: ''
+                                        MDTextField:
+                                            id: hostmodbus
+                                            text: '127.0.0.1'
+                                            halign: "center"
+                                            hint_text: "Modbus Address"
+                                            size_hint: (0.2, None)
+                                            height: "60dp"
+                                        MDTextField:
+                                            id: portmodbus
+                                            text: '502'
+                                            halign: "center"
+                                            hint_text: "Modbus Port"
+                                            size_hint: (0.2, None)
+                                            height: "60dp"
+                                            
                                 MDBottomNavigationItem:
                                     name: "connection"
                                     text: "CONNECT"
@@ -249,7 +252,10 @@
                                             icon: 'connection'
                                             pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                             on_release: root.connection()
+
+
 # TELA GATEWAY      
+
                     MDScreen:
                         name: 'gateway_screen'
                         MDBoxLayout:
@@ -538,7 +544,10 @@
                                             icon: "arrow-collapse-up"
                                             pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                             on_release: root.gateway()
+
+
 #TELA MQTT
+
                     MDScreen:
                         name: 'mqtt_screen'
                         MDBoxLayout:
@@ -546,8 +555,11 @@
                             MDBottomNavigation: 
                                 panel_color: app.theme_cls.accent_color
                                 text_color_normal: 0.4,0.4,0.4,1
-                                text_color_active: 0.8,0.8,0.8,1                                
-#MQTT PUBLISHER                                
+                                text_color_active: 0.8,0.8,0.8,1             
+
+
+#MQTT PUBLISHER                 
+
                                 MDBottomNavigationItem:
                                     name: "readpub"
                                     text: "PUBLISHER"
@@ -589,8 +601,10 @@
                                                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                                 on_release: 
                                                     root.pub()
+
                                                 
 #MQTT SUBSCRIBER
+
                                 # MDBottomNavigationItem:
                                 #     name: "writesub"
                                 #     text: "SUBSCRIBER"
@@ -630,7 +644,10 @@
                                 #             halign: "center"
                                 #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                 #             font_size: 15
+
+
 #TELA MODBUS                
+
                     MDScreen:
                         name: "modbus_screen"
                         MDBoxLayout:
@@ -661,7 +678,7 @@
                                             MDTextField:
                                                 id: modbusaddrwrite
                                                 hint_text: "Modbus Address"
-                                                text: '1325'
+                                                text: '1225'
                                                 halign: "center"
                                                 size_hint: (0.2, None)
                                                 height: "60dp"
@@ -723,7 +740,7 @@
                                             MDTextField:
                                                 id: modbusaddrread
                                                 hint_text: "Modbus Starting Address"
-                                                text: '350'
+                                                text: '1227'
                                                 halign: "center"
                                                 size_hint: (0.2, None)
                                                 height: "60dp"
@@ -762,7 +779,10 @@
                                                     icon: "monitor-eye"
                                                     pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                                     on_release: root.read()
+
+
 #TELA ABOUT
+
                     MDScreen:
                         name: "about_screen"
                         MDBoxLayout:
@@ -799,6 +819,8 @@
                                     halign: "center"
                                     pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                     font_size: 12           
+
+
 # MDNavigationDrawer
 
                 MDNavigationDrawer:

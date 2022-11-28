@@ -12,7 +12,7 @@ class Modbus2MqttClient():
         #Mosquitto Broker and Paho-MQTT
         self._broker_addrs = kw['mqtt_broker_Addrs']
         self._broker_port = kw['mqtt_broker_Port']
-        self._status_conn_mqtt = False
+        self._status_connection_mqtt = False
 
         #AWS IoT Core SDK
         self._aws_client_id = kw['awsiot_client_id']
@@ -22,7 +22,7 @@ class Modbus2MqttClient():
         self._aws_privatekey = kw['awsiot_path_to_private_key']
         self._aws_rootca1 = kw['awsiot_path_to_amazon_root_ca1']
         self._tls_encryption = kw['tls_encryption']
-        self._status_conn_mqtt_aws = False
+        self._status_connection_mqtt_tls = False
         
 
         if self._tls_encryption:
@@ -71,24 +71,12 @@ class Modbus2MqttClient():
                     msgstatus['Message'] = "Client connected!"
                     msg_json = json.dumps(msgstatus)
                     self._mqtt_client.publish(topic="status/connection", payload=msg_json, QoS= 1)
-                    
-                    #Creates the thread responsible for the main subscription
-                    try:
-                        self._subscribed_thread = True
-                        self._thread_subscriber = threading.Thread(target=self.subscribe, name='Thread Subscriber (TLS)', args=(self._default_sub_topic,))
-                        self._thread_subscriber.start()
-                        self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
-                        pass
-                    except Exception as e: 
-                        print('Subscription ERROR: ', e.args)
-                    
                     print('MQTT ---------> OK\n')
-                    self._status_conn_mqtt_aws = True
+                    self._status_connection_mqtt_tls = True
                     #Creates the thread responsible for the main subscription with TLS Encryption
                     try:
-                        self._subscribed_thread = True
-                        self.subscribe(topic=self._default_sub_topic, thread_name='Main Subscriber Thread')
-                        pass
+                        self._tls_subscribed_thread = True
+                        self.subscribeTLS(topic=self._default_sub_topic, thread_name='Main TLS Subscriber Thread')
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
                 else:
@@ -104,12 +92,11 @@ class Modbus2MqttClient():
                     msg_json = json.dumps(msgstatus)
                     self.mqttPublisher(topic="status/connection", msg=msg_json)
                     print('MQTT ---------> OK\n')
-                    self._status_conn_mqtt = True
+                    self._status_connection_mqtt = True
                     #Creates the thread responsible for the main subscription without TLS
                     try:
                         self._subscribed_thread = True
                         self.subscribe(topic=self._default_sub_topic, thread_name='Main Subscriber Thread')
-                        pass
                     except Exception as e: 
                         print('Subscription ERROR: ', e.args)
         except Exception as e: 
@@ -124,22 +111,24 @@ class Modbus2MqttClient():
             msgstatus['Timestamp'] = str(dt.now())
             msgstatus['Message'] = "Client disconnected!"
             msg_json = json.dumps(msgstatus)
-            if self._status_conn_mqtt:
+            if self._status_connection_mqtt:
                 self.mqttPublisher(topic="status/connection", msg=msg_json)
-            elif self._status_conn_mqtt_aws:
+            elif self._status_connection_mqtt_tls:
                 self.awsMqttPublisher(topic="status/connection", msg=msg_json)
             else:
                 pass
             self._connecting_thread = False
             self._publishing_thread = False
             self._subscribing_thread = False
-            self._mqtt_sub_thread._mqtt_subscriber_client.loop_stop()
-            self._mqtt_sub_thread._mqtt_subscriber_client.disconnect()
+            if self._tls_encryption:
+                self._mqtt_sub_thread._mqtt_subscriber_client.unsubscribe(self._default_sub_topic)
+            else:
+                self._mqtt_sub_thread._mqtt_subscriber_client.loop_stop()
             self._mqtt_client.disconnect()
             self._atendimento = False
             self._app = False
-            self._status_conn_mqtt = False
-            self._status_conn_mqtt_aws = False
+            self._status_connection_mqtt = False
+            self._status_connection_mqtt_tls = False
             print("\nThe client is now disconnected...")
         except Exception as e:
             print('ERROR disconnecting: ', e.args)
@@ -175,9 +164,9 @@ class Modbus2MqttClient():
                     msg_dict['Modbus Data Display'] = ('F32' if type_display1 else 'UINT16')
                     msg_dict['MQTT Topic'] = mqtt_pub_topic1
                     msg_json = json.dumps(msg_dict)
-                    if self._status_conn_mqtt:
+                    if self._status_connection_mqtt:
                             self.mqttPublisher(topic=mqtt_pub_topic1, msg=msg_json)
-                    elif self._status_conn_mqtt_aws:
+                    elif self._status_connection_mqtt_tls:
                         self.awsMqttPublisher(topic=mqtt_pub_topic1, msg=msg_json)
                     else:
                         print('Problem with the MQTT connection...')
@@ -197,9 +186,9 @@ class Modbus2MqttClient():
                     msg_dict['Modbus Data Display'] = ('F32' if type_display2 else 'UINT16')
                     msg_dict['MQTT Topic'] = mqtt_pub_topic2
                     msg_json = json.dumps(msg_dict)
-                    if self._status_conn_mqtt:
+                    if self._status_connection_mqtt:
                         self.mqttPublisher(topic=mqtt_pub_topic2, msg=msg_json)
-                    elif self._status_conn_mqtt_aws:
+                    elif self._status_connection_mqtt_tls:
                         self.awsMqttPublisher(topic=mqtt_pub_topic2, msg=msg_json)
                     else:
                         print('Problem with the MQTT connection...')
@@ -219,9 +208,9 @@ class Modbus2MqttClient():
                     msg_dict['Modbus Data Display'] = ('F32' if type_display3 else 'UINT16')
                     msg_dict['MQTT Topic'] = mqtt_pub_topic3
                     msg_json = json.dumps(msg_dict)
-                    if self._status_conn_mqtt:
+                    if self._status_connection_mqtt:
                         self.mqttPublisher(topic=mqtt_pub_topic3, msg=msg_json)
-                    elif self._status_conn_mqtt_aws:
+                    elif self._status_connection_mqtt_tls:
                         self.awsMqttPublisher(topic=mqtt_pub_topic3, msg=msg_json)
                     else:
                         print('Problem with the MQTT connection...')
@@ -241,9 +230,9 @@ class Modbus2MqttClient():
                     msg_dict['Modbus Data Display'] = ('F32' if type_display4 else 'UINT16')
                     msg_dict['MQTT Topic'] = mqtt_pub_topic4
                     msg_json = json.dumps(msg_dict)
-                    if self._status_conn_mqtt:
+                    if self._status_connection_mqtt:
                         self.mqttPublisher(topic=mqtt_pub_topic4, msg=msg_json)
-                    elif self._status_conn_mqtt_aws:
+                    elif self._status_connection_mqtt_tls:
                         self.awsMqttPublisher(topic=mqtt_pub_topic4, msg=msg_json)
                     else:
                         print('Problem with the MQTT connection...')
@@ -254,9 +243,9 @@ class Modbus2MqttClient():
                         try:
                             with open(json_file_path) as file:
                                 param_json = json.load(file)
-                            if self._status_conn_mqtt:
+                            if self._status_connection_mqtt:
                                 self.mqttPublisher(topic=param_json["System Description"]['Topic'], msg=json.dumps(param_json["System Description"]))
-                            elif self._status_conn_mqtt_aws:
+                            elif self._status_connection_mqtt_tls:
                                 self.awsMqttPublisher(topic=param_json["System Description"]['Topic'], msg=json.dumps(param_json["System Description"]))
                             else:
                                 print('Problem with the MQTT connection...')
@@ -285,9 +274,9 @@ class Modbus2MqttClient():
                                     msg_dict['Modbus modbus2mqtt Display'] = modbus2mqtt[var]['Type']
                                     msg_dict['MQTT Topic'] = modbus2mqtt[var]['Topic']
                                     msg_json = json.dumps(msg_dict)
-                                    if self._status_conn_mqtt:
+                                    if self._status_connection_mqtt:
                                         self.mqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
-                                    elif self._status_conn_mqtt_aws:
+                                    elif self._status_connection_mqtt_tls:
                                         self.awsMqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
                                     else:
                                         print('Problem with the MQTT connection...')
@@ -449,7 +438,7 @@ class Modbus2MqttClient():
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish to broker, please check IP address and port...')
-            self._status_conn_mqtt = False
+            self._status_connection_mqtt = False
 
 
     def awsMqttPublisher(self, topic, msg):
@@ -461,14 +450,27 @@ class Modbus2MqttClient():
         except Exception as e:
             print('ERROR: ', e.args, end='')
             print('Error when trying to publish mqtt with TLS encryption, please check the configs...')
-            self._status_conn_mqtt_aws = False
+            self._status_connection_mqtt_tls = False
 
 
     def subscribe(self, topic, thread_name):
         """ Subscription method """
-        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
-        self._thread_subscriber.start()
-        self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+        try:
+            self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
+            self._thread_subscriber.start()
+            self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+        except Exception as e:
+            print('ERROR creating thread responsible for the subscriptions: ', e.args, end='')
+
+
+    def subscribeTLS(self, topic, thread_name):
+        """ Subscription method """
+        try:
+            self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.tlsSubscribe, name=thread_name, args=(topic,))
+            self._thread_subscriber.start()
+        # self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+        except Exception as e:
+            print('ERROR creating thread responsible for the TLS subscriptions: ', e.args, end='')
 
 
     def gatewaySubscribe(self, topic, modbus_addr, thread_name): #it is not being used yet

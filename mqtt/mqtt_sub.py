@@ -27,6 +27,20 @@ class MQTTSubscriber():
         except Exception as e: 
             print('MQTT ERROR: ', e.args)
 
+
+    def tlsSubscribe(self, topic):
+        """ Method responsible for the mqtt subscription with TLS Encryption """
+        print(f'TLSSubClient thread name = {threading.current_thread().getName()}')
+        def customCallback(client, userdata, msg): 
+            self.readMessage(msg)
+
+        try:
+            subscription_return = self._mqtt_subscriber_client.subscribe(topic, 1, customCallback)
+            print(f'Subscribed to topic: {topic}')
+            return subscription_return
+        except Exception as e: 
+            print('MQTT ERROR: ', e.args)
+
     
     def readMessage(self, msg):
         """ Read the msg payload and decides what to do """
