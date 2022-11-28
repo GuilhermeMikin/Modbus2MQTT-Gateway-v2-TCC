@@ -459,7 +459,7 @@ class Modbus2MqttClient():
 
 
     def subscribe(self, topic, thread_name):
-        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,self._mbs_client))
+        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
         self._thread_subscriber.start()
         self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
         
