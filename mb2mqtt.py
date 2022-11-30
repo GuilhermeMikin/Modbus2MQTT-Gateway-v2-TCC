@@ -66,11 +66,11 @@ class Modbus2MqttClient():
                 self._mqtt_client.configureEndpoint(self._aws_endpoint, 8883)
                 self._mqtt_client.configureCredentials(self._aws_rootca1, self._aws_privatekey, self._aws_certificate)
                 if self._mqtt_client.connect():
-                    msgstatus = dict()
-                    msgstatus['Timestamp'] = str(dt.now())
-                    msgstatus['Message'] = "Client connected!"
-                    msg_json = json.dumps(msgstatus)
-                    self._mqtt_client.publish(topic="status/connection", payload=msg_json, QoS= 1)
+                    conn_msgstatus = dict()
+                    conn_msgstatus['Timestamp'] = str(dt.now())
+                    conn_msgstatus['Message'] = "Client connected!"
+                    conn_status_msg_json = json.dumps(conn_msgstatus)
+                    self._mqtt_client.publish(topic="status/connection", payload=conn_status_msg_json, QoS= 1)
                     print('MQTT ---------> OK\n')
                     self._status_connection_mqtt_tls = True
                     #Creates the thread responsible for the main subscription with TLS Encryption
@@ -86,11 +86,11 @@ class Modbus2MqttClient():
                     print("Unable to establish connection with MQTT Broker!")
                     sys.exit(-1)
                 else:
-                    msgstatus = dict()
-                    msgstatus['Timestamp'] = str(dt.now())
-                    msgstatus['Message'] = "Client connected!"
-                    msg_json = json.dumps(msgstatus)
-                    self.mqttPublisher(topic="status/connection", msg=msg_json)
+                    conn_msgstatus = dict()
+                    conn_msgstatus['Timestamp'] = str(dt.now())
+                    conn_msgstatus['Message'] = "Client connected!"
+                    conn_status_msg_json = json.dumps(conn_msgstatus)
+                    self.mqttPublisher(topic="status/connection", msg=conn_status_msg_json)
                     print('MQTT ---------> OK\n')
                     self._status_connection_mqtt = True
                     #Creates the thread responsible for the main subscription without TLS
@@ -107,14 +107,14 @@ class Modbus2MqttClient():
 
     def disconnect(self):
         try:
-            msgstatus = dict()
-            msgstatus['Timestamp'] = str(dt.now())
-            msgstatus['Message'] = "Client disconnected!"
-            msg_json = json.dumps(msgstatus)
+            conn_msgstatus = dict()
+            conn_msgstatus['Timestamp'] = str(dt.now())
+            conn_msgstatus['Message'] = "Client disconnected!"
+            conn_status_msg_json = json.dumps(conn_msgstatus)
             if self._status_connection_mqtt:
-                self.mqttPublisher(topic="status/connection", msg=msg_json)
+                self.mqttPublisher(topic="status/connection", msg=conn_status_msg_json)
             elif self._status_connection_mqtt_tls:
-                self.awsMqttPublisher(topic="status/connection", msg=msg_json)
+                self.awsMqttPublisher(topic="status/connection", msg=conn_status_msg_json)
             else:
                 pass
             self._connecting_thread = False
@@ -150,100 +150,103 @@ class Modbus2MqttClient():
         """
         try:
             while self._publishing_thread:
-                if manual_gates[0]:
-                    if type_display1:
-                        modbusValues1 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr1),modbus_read_length1)
-                    else:
-                        modbusValues1 = self.readMbsData(int(modbus_type),int(modbus_read_addr1),modbus_read_length1)
-                    msg_dict = dict()
-                    msg_dict['Timestamp'] = str(dt.now())
-                    msg_dict['Value'] = self.cleanMessage(modbusValues1)
-                    msg_dict['Unity'] = '-'
-                    msg_dict['Modbus Address'] = modbus_read_addr1
-                    msg_dict['Modbus Length'] = modbus_read_length1
-                    msg_dict['Modbus Function Code'] = modbus_type
-                    msg_dict['Modbus Data Display'] = ('F32' if type_display1 else 'UINT16')
-                    msg_dict['MQTT Topic'] = mqtt_pub_topic1
-                    msg_json = json.dumps(msg_dict)
-                    if self._status_connection_mqtt:
-                            self.mqttPublisher(topic=mqtt_pub_topic1, msg=msg_json)
-                    elif self._status_connection_mqtt_tls:
-                        self.awsMqttPublisher(topic=mqtt_pub_topic1, msg=msg_json)
-                    else:
-                        print('Problem with the MQTT connection...')
-                        sleep(1)
-                if manual_gates[1]:
-                    if type_display2:
-                        modbusValues2 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr2),modbus_read_length2)
-                    else:
-                        modbusValues2 = self.readMbsData(int(modbus_type),int(modbus_read_addr2),modbus_read_length2)
-                    msg_dict = dict()
-                    msg_dict['Timestamp'] = str(dt.now())
-                    msg_dict['Value'] = self.cleanMessage(modbusValues2)
-                    msg_dict['Unity'] = '-'
-                    msg_dict['Modbus Address'] = modbus_read_addr2
-                    msg_dict['Modbus Length'] = modbus_read_length2
-                    msg_dict['Modbus Function Code'] = modbus_type
-                    msg_dict['Modbus Data Display'] = ('F32' if type_display2 else 'UINT16')
-                    msg_dict['MQTT Topic'] = mqtt_pub_topic2
-                    msg_json = json.dumps(msg_dict)
-                    if self._status_connection_mqtt:
-                        self.mqttPublisher(topic=mqtt_pub_topic2, msg=msg_json)
-                    elif self._status_connection_mqtt_tls:
-                        self.awsMqttPublisher(topic=mqtt_pub_topic2, msg=msg_json)
-                    else:
-                        print('Problem with the MQTT connection...')
-                        sleep(1)
-                if manual_gates[2]:
-                    if type_display3:
-                        modbusValues3 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr3),modbus_read_length3)
-                    else:
-                        modbusValues3 = self.readMbsData(int(modbus_type),int(modbus_read_addr3),modbus_read_length3)
-                    msg_dict = dict()
-                    msg_dict['Timestamp'] = str(dt.now())
-                    msg_dict['Value'] = self.cleanMessage(modbusValues3)
-                    msg_dict['Unity'] = '-'
-                    msg_dict['Modbus Address'] = modbus_read_addr3
-                    msg_dict['Modbus Length'] = modbus_read_length3
-                    msg_dict['Modbus Function Code'] = modbus_type
-                    msg_dict['Modbus Data Display'] = ('F32' if type_display3 else 'UINT16')
-                    msg_dict['MQTT Topic'] = mqtt_pub_topic3
-                    msg_json = json.dumps(msg_dict)
-                    if self._status_connection_mqtt:
-                        self.mqttPublisher(topic=mqtt_pub_topic3, msg=msg_json)
-                    elif self._status_connection_mqtt_tls:
-                        self.awsMqttPublisher(topic=mqtt_pub_topic3, msg=msg_json)
-                    else:
-                        print('Problem with the MQTT connection...')
-                        sleep(1)
-                if manual_gates[3]:
-                    if type_display4:
-                        modbusValues4 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr4),modbus_read_length4)
-                    else:
-                        modbusValues4 = self.readMbsData(int(modbus_type),int(modbus_read_addr4),modbus_read_length4)
-                    msg_dict = dict()
-                    msg_dict['Timestamp'] = str(dt.now())
-                    msg_dict['Value'] = self.cleanMessage(modbusValues4)
-                    msg_dict['Unity'] = '-'
-                    msg_dict['Modbus Address'] = modbus_read_addr4
-                    msg_dict['Modbus Length'] = modbus_read_length4
-                    msg_dict['Modbus Function Code'] = modbus_type
-                    msg_dict['Modbus Data Display'] = ('F32' if type_display4 else 'UINT16')
-                    msg_dict['MQTT Topic'] = mqtt_pub_topic4
-                    msg_json = json.dumps(msg_dict)
-                    if self._status_connection_mqtt:
-                        self.mqttPublisher(topic=mqtt_pub_topic4, msg=msg_json)
-                    elif self._status_connection_mqtt_tls:
-                        self.awsMqttPublisher(topic=mqtt_pub_topic4, msg=msg_json)
-                    else:
-                        print('Problem with the MQTT connection...')
-                        sleep(1)
+                try:
+                    if manual_gates[0]:
+                        if type_display1:
+                            modbusValues1 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr1),modbus_read_length1)
+                        else:
+                            modbusValues1 = self.readMbsData(int(modbus_type),int(modbus_read_addr1),modbus_read_length1)
+                        msg_dict = dict()
+                        msg_dict['Timestamp'] = str(dt.now())
+                        msg_dict['Value'] = self.cleanMessage(modbusValues1)
+                        msg_dict['Unity'] = '-'
+                        msg_dict['Modbus Address'] = modbus_read_addr1
+                        msg_dict['Modbus Length'] = modbus_read_length1
+                        msg_dict['Modbus Function Code'] = modbus_type
+                        msg_dict['Modbus Data Display'] = ('F32' if type_display1 else 'UINT16')
+                        msg_dict['MQTT Topic'] = mqtt_pub_topic1
+                        msg_json = json.dumps(msg_dict)
+                        if self._status_connection_mqtt:
+                                self.mqttPublisher(topic=mqtt_pub_topic1, msg=msg_json)
+                        elif self._status_connection_mqtt_tls:
+                            self.awsMqttPublisher(topic=mqtt_pub_topic1, msg=msg_json)
+                        else:
+                            print('Problem with the MQTT connection...')
+                            sleep(1)
+                    if manual_gates[1]:
+                        if type_display2:
+                            modbusValues2 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr2),modbus_read_length2)
+                        else:
+                            modbusValues2 = self.readMbsData(int(modbus_type),int(modbus_read_addr2),modbus_read_length2)
+                        msg_dict = dict()
+                        msg_dict['Timestamp'] = str(dt.now())
+                        msg_dict['Value'] = self.cleanMessage(modbusValues2)
+                        msg_dict['Unity'] = '-'
+                        msg_dict['Modbus Address'] = modbus_read_addr2
+                        msg_dict['Modbus Length'] = modbus_read_length2
+                        msg_dict['Modbus Function Code'] = modbus_type
+                        msg_dict['Modbus Data Display'] = ('F32' if type_display2 else 'UINT16')
+                        msg_dict['MQTT Topic'] = mqtt_pub_topic2
+                        msg_json = json.dumps(msg_dict)
+                        if self._status_connection_mqtt:
+                            self.mqttPublisher(topic=mqtt_pub_topic2, msg=msg_json)
+                        elif self._status_connection_mqtt_tls:
+                            self.awsMqttPublisher(topic=mqtt_pub_topic2, msg=msg_json)
+                        else:
+                            print('Problem with the MQTT connection...')
+                            sleep(1)
+                    if manual_gates[2]:
+                        if type_display3:
+                            modbusValues3 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr3),modbus_read_length3)
+                        else:
+                            modbusValues3 = self.readMbsData(int(modbus_type),int(modbus_read_addr3),modbus_read_length3)
+                        msg_dict = dict()
+                        msg_dict['Timestamp'] = str(dt.now())
+                        msg_dict['Value'] = self.cleanMessage(modbusValues3)
+                        msg_dict['Unity'] = '-'
+                        msg_dict['Modbus Address'] = modbus_read_addr3
+                        msg_dict['Modbus Length'] = modbus_read_length3
+                        msg_dict['Modbus Function Code'] = modbus_type
+                        msg_dict['Modbus Data Display'] = ('F32' if type_display3 else 'UINT16')
+                        msg_dict['MQTT Topic'] = mqtt_pub_topic3
+                        msg_json = json.dumps(msg_dict)
+                        if self._status_connection_mqtt:
+                            self.mqttPublisher(topic=mqtt_pub_topic3, msg=msg_json)
+                        elif self._status_connection_mqtt_tls:
+                            self.awsMqttPublisher(topic=mqtt_pub_topic3, msg=msg_json)
+                        else:
+                            print('Problem with the MQTT connection...')
+                            sleep(1)
+                    if manual_gates[3]:
+                        if type_display4:
+                            modbusValues4 = self.readMbsF32Data(int(modbus_type),int(modbus_read_addr4),modbus_read_length4)
+                        else:
+                            modbusValues4 = self.readMbsData(int(modbus_type),int(modbus_read_addr4),modbus_read_length4)
+                        msg_dict = dict()
+                        msg_dict['Timestamp'] = str(dt.now())
+                        msg_dict['Value'] = self.cleanMessage(modbusValues4)
+                        msg_dict['Unity'] = '-'
+                        msg_dict['Modbus Address'] = modbus_read_addr4
+                        msg_dict['Modbus Length'] = modbus_read_length4
+                        msg_dict['Modbus Function Code'] = modbus_type
+                        msg_dict['Modbus Data Display'] = ('F32' if type_display4 else 'UINT16')
+                        msg_dict['MQTT Topic'] = mqtt_pub_topic4
+                        msg_json = json.dumps(msg_dict)
+                        if self._status_connection_mqtt:
+                            self.mqttPublisher(topic=mqtt_pub_topic4, msg=msg_json)
+                        elif self._status_connection_mqtt_tls:
+                            self.awsMqttPublisher(topic=mqtt_pub_topic4, msg=msg_json)
+                        else:
+                            print('Problem with the MQTT connection...')
+                            sleep(1)
+                except Exception as e: 
+                    print('ERROR in Modbus2MQTT Mnual Gateway: ', e.args)
                 if json_gates:
-                    if not self._description_sent:
-                        self._description_sent = True
-                        try:
-                            with open(json_file_path) as file:
-                                param_json = json.load(file)
+                    try:
+                        with open(json_file_path) as file:
+                            param_json = json.load(file)
+                        if not self._description_sent:
+                            self._description_sent = True
                             if self._status_connection_mqtt:
                                 self.mqttPublisher(topic=param_json["System Description"]['Topic'], msg=json.dumps(param_json["System Description"]))
                             elif self._status_connection_mqtt_tls:
@@ -251,38 +254,40 @@ class Modbus2MqttClient():
                             else:
                                 print('Problem with the MQTT connection...')
                                 sleep(1)
-                        except Exception as e:
-                            print('ERROR reading Json: ', e.args, end='')
+                    except Exception as e:
+                        print('ERROR reading Json: ', e.args, end='')
                     try:
                         for parameter in param_json:
                             if parameter == 'System Description':
                                 pass
                             elif parameter == 'Modbus2MQTT':
-                                modbus2mqtt = param_json["Modbus2MQTT"]
-                                for var in modbus2mqtt:
-                                    if str(modbus2mqtt[var]["Type"]) == 'F32':
-                                        modbusValues = self.readMbsF32Data(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
-                                    else:
-                                        modbusValues = self.readMbsData(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
-                                        print(f'modbusValues: {modbusValues} - modbus type: {modbus_type} - addr {modbus2mqtt[var]["Address"]}')
-                                    msg_dict = dict()
-                                    msg_dict['Timestamp'] = str(dt.now())
-                                    msg_dict['Physical Quantity'] = var
-                                    msg_dict['Value'] = self.cleanMessage(modbusValues)
-                                    msg_dict['Unity'] = modbus2mqtt[var]['Unity']
-                                    msg_dict['Modbus Address'] = int(modbus2mqtt[var]['Address'])
-                                    msg_dict['Modbus Length'] = modbus2mqtt[var]['Length']
-                                    msg_dict['Modbus Function Code'] = modbus_type
-                                    msg_dict['Modbus modbus2mqtt Display'] = modbus2mqtt[var]['Type']
-                                    msg_dict['MQTT Topic'] = modbus2mqtt[var]['Topic']
-                                    msg_json = json.dumps(msg_dict)
-                                    if self._status_connection_mqtt:
-                                        self.mqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
-                                    elif self._status_connection_mqtt_tls:
-                                        self.awsMqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
-                                    else:
-                                        print('Problem with the MQTT connection...')
-                                        sleep(1)
+                                try:
+                                    modbus2mqtt = param_json["Modbus2MQTT"]
+                                    for var in modbus2mqtt:
+                                        if str(modbus2mqtt[var]["Type"]) == 'F32':
+                                            modbusValues = self.readMbsF32Data(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
+                                        else:
+                                            modbusValues = self.readMbsData(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
+                                        msg_dict = dict()
+                                        msg_dict['Timestamp'] = str(dt.now())
+                                        msg_dict['Physical Quantity'] = var
+                                        msg_dict['Value'] = self.cleanMessage(modbusValues)
+                                        msg_dict['Unity'] = modbus2mqtt[var]['Unity']
+                                        msg_dict['Modbus Address'] = int(modbus2mqtt[var]['Address'])
+                                        msg_dict['Modbus Length'] = modbus2mqtt[var]['Length']
+                                        msg_dict['Modbus Function Code'] = modbus_type
+                                        msg_dict['Modbus modbus2mqtt Display'] = modbus2mqtt[var]['Type']
+                                        msg_dict['MQTT Topic'] = modbus2mqtt[var]['Topic']
+                                        msg_json = json.dumps(msg_dict)
+                                        if self._status_connection_mqtt:
+                                            self.mqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
+                                        elif self._status_connection_mqtt_tls:
+                                            self.awsMqttPublisher(topic=modbus2mqtt[var]['Topic'], msg=msg_json)
+                                        else:
+                                            print('Problem with the MQTT connection...')
+                                            sleep(1)
+                                except Exception as e:
+                                    print('ERROR Modbus2MQTT JSON Gateway: ', e.args, end='')
                             elif parameter == 'MQTT2Modbus':
                                 ''' Parameterization of mqtt subscription and modbus writing '''
                                 try:
@@ -294,17 +299,15 @@ class Modbus2MqttClient():
                                             modbus_addr = mqtt2modbus[var]['Address']
                                             if self._status_connection_mqtt:
                                                 # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
-                                                print('JSON GW-Subscriber client created AND INICIATED')
                                                 pass
                                             elif self._status_connection_mqtt_tls:
                                                 # self.subscribeTLS(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway TLS Subscriber Thread')
-                                                print('JSON GW-Subscriber client created AND INICIATED')
                                                 pass
                                             else:
                                                 print('Problem with the MQTT connection...')
-                                            print(f'Write msg from topic {topic} in modbus addrs {modbus_addr}')
+                                            # print(f'Write msg from topic {topic} in modbus addrs {modbus_addr}')
                                 except Exception as e: 
-                                    print('ERROR in mqtt2modbus subscriptions: ', e.args)
+                                    print('ERROR in MQTT2Modbus Gateway: ', e.args)
                         try:
                             topic_gw = 'status/gateway'
                             if not self._gateway_subscribed_thread:
@@ -314,10 +317,10 @@ class Modbus2MqttClient():
                         except Exception as e: 
                             print('ERROR in default gateway topic subscription: ', e.args)
                     except Exception as e:
-                        print(f'ERROR json {msg_json}: ', e.args, end='')
-        except Exception as e:
-            print('ERROR: ', e.args, end='')
-            print('Error when trying to publish to broker, please check IP address and port...')
+                        print(f'ERROR json: {e.args}')
+                sleep(0.2)
+        except Exception as e:  
+            print('ERROR in Gateway: ', e.args)
 
 
     def readMbsData(self, tipo, addr, leng=1):

@@ -22,7 +22,7 @@ class MQTTSubscriber():
         try:
             self._mqtt_subscriber_client.on_message = on_message
             subscription_return = self._mqtt_subscriber_client.subscribe(topic)
-            print(f'Subscribed to topic: {topic}')
+            print(f'Subscribed to topic: {topic}\n')
             return subscription_return
         except Exception as e: 
             print('MQTT ERROR: ', e.args)
