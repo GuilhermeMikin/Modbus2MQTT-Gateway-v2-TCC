@@ -55,6 +55,7 @@ class MyWidget(MDScreen):
                 self.ids.img_con.source = 'imgs/desconectado.png'
                 Snackbar(text = "Client disconnected!", bg_color=(1,0,0,1)).open()
                 self._mb2mqttClient.disconnect()
+                self.ids.bt_readpub.text = "Start Reading/Publishing"
             else:
                 Snackbar(text = "Something went wrong!", bg_color=(1,0,0,1)).open()
         except Exception as e:

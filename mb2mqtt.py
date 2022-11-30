@@ -264,6 +264,7 @@ class Modbus2MqttClient():
                                         modbusValues = self.readMbsF32Data(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
                                     else:
                                         modbusValues = self.readMbsData(int(modbus_type),int(modbus2mqtt[var]['Address']),modbus2mqtt[var]['Length'])
+                                        print(f'modbusValues: {modbusValues} - modbus type: {modbus_type} - addr {modbus2mqtt[var]["Address"]}')
                                     msg_dict = dict()
                                     msg_dict['Timestamp'] = str(dt.now())
                                     msg_dict['Physical Quantity'] = var
@@ -293,11 +294,11 @@ class Modbus2MqttClient():
                                             modbus_addr = mqtt2modbus[var]['Address']
                                             if self._status_connection_mqtt:
                                                 # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
-                                                # print('JSON GW-Subscriber client created AND INICIATED')
+                                                print('JSON GW-Subscriber client created AND INICIATED')
                                                 pass
                                             elif self._status_connection_mqtt_tls:
-                                                # self.subscribeTLS(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
-                                                # print('JSON GW-Subscriber client created AND INICIATED')
+                                                # self.subscribeTLS(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway TLS Subscriber Thread')
+                                                print('JSON GW-Subscriber client created AND INICIATED')
                                                 pass
                                             else:
                                                 print('Problem with the MQTT connection...')

@@ -15,7 +15,7 @@ class MQTTSubscriber():
     
     def subscribe(self, topic):
         """ Method responsible for the mqtt subscription """
-        print(f'SubClient thread name = {threading.current_thread().getName()}')
+        # print(f'SubClient thread name = {threading.current_thread().getName()}')
         def on_message(client, userdata, msg): 
             self.readMessage(msg)
 
@@ -30,7 +30,7 @@ class MQTTSubscriber():
 
     def tlsSubscribe(self, topic):
         """ Method responsible for the mqtt subscription with TLS Encryption """
-        print(f'TLSSubClient thread name = {threading.current_thread().getName()}')
+        # print(f'TLSSubClient thread name = {threading.current_thread().getName()}')
         def customCallback(client, userdata, msg): 
             self.readMessage(msg)
 
@@ -51,6 +51,8 @@ class MQTTSubscriber():
                 modbus_write_addr = int(msg_itens[2])
                 modbus_write_value = int(msg_itens[4])
                 try:
+                    if not self._mqtt2mbsClient.is_open():
+                        self._mqtt2mbsClient.open()
                     self._mqtt2mbsClient.write_single_register(modbus_write_addr -1, modbus_write_value)
                     print(f'Modbus message "{modbus_write_value}" successfully written in address {modbus_write_addr}')
                 except Exception as e: 
