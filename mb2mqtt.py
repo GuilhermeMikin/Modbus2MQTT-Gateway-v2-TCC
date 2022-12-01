@@ -298,22 +298,24 @@ class Modbus2MqttClient():
                                             topic = mqtt2modbus[var]['Topic']
                                             modbus_addr = mqtt2modbus[var]['Address']
                                             if self._status_connection_mqtt:
-                                                # self.subscribe(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway Subscriber Thread')
-                                                pass
+                                                print('ue')
+                                                self.subscribe(topic=topic, thread_name='JSON Gateway Subscriber Thread')
                                             elif self._status_connection_mqtt_tls:
-                                                # self.subscribeTLS(topic=topic, modbus_addr=modbus_addr, thread_name='JSON Gateway TLS Subscriber Thread')
-                                                pass
+                                                self.subscribeTLS(topic=topic, thread_name='JSON Gateway TLS Subscriber Thread')
                                             else:
                                                 print('Problem with the MQTT connection...')
-                                            # print(f'Write msg from topic {topic} in modbus addrs {modbus_addr}')
                                 except Exception as e: 
                                     print('ERROR in MQTT2Modbus Gateway: ', e.args)
                         try:
                             topic_gw = 'status/gateway'
                             if not self._gateway_subscribed_thread:
                                 self._gateway_subscribed_thread = True
-                                self.subscribe(topic=topic_gw, thread_name='Gateway Subscriber Thread')
-                            pass
+                                if self._status_connection_mqtt:
+                                    self.subscribe(topic=topic_gw, thread_name='Gateway Subscriber Thread')
+                                elif self._status_connection_mqtt_tls:
+                                    self.subscribeTLS(topic=topic_gw, thread_name='Gateway TLS Subscriber Thread')
+                                else:
+                                    print('Problem with the MQTT connection...')
                         except Exception as e: 
                             print('ERROR in default gateway topic subscription: ', e.args)
                     except Exception as e:
@@ -469,9 +471,11 @@ class Modbus2MqttClient():
     def subscribe(self, topic, thread_name):
         """ Subscription method """
         try:
+            self.locker.acquire()
             self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic,))
             self._thread_subscriber.start()
             self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+            self.locker.release()
         except Exception as e:
             print('ERROR creating thread responsible for the subscriptions: ', e.args, end='')
 
@@ -479,8 +483,10 @@ class Modbus2MqttClient():
     def subscribeTLS(self, topic, thread_name):
         """ Subscription method """
         try:
+            self.locker.acquire()
             self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.tlsSubscribe, name=thread_name, args=(topic,))
             self._thread_subscriber.start()
+            self.locker.release()
         # self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
         except Exception as e:
             print('ERROR creating thread responsible for the TLS subscriptions: ', e.args, end='')
@@ -488,9 +494,12 @@ class Modbus2MqttClient():
 
     def gatewaySubscribe(self, topic, modbus_addr, thread_name): #it is not being used yet
         """ Subscription method for the json gateway """
-        self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic, modbus_addr))
-        self._thread_subscriber.start()
-        self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+        try:
+            self._thread_subscriber = threading.Thread(target=self._mqtt_sub_thread.subscribe, name=thread_name, args=(topic, modbus_addr))
+            self._thread_subscriber.start()
+            self._mqtt_sub_thread._mqtt_subscriber_client.loop_start()
+        except Exception as e:
+            print('ERROR creating thread responsible for the TLS subscriptions: ', e.args, end='')   
         
 
 
