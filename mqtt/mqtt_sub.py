@@ -57,6 +57,8 @@ class MQTTSubscriber():
                     print(f'Modbus message "{modbus_write_value}" successfully written in address {modbus_write_addr}')
                 except Exception as e: 
                     print('Mbs ERROR: ', e.args)
+            elif msg_itens[0] == 'connection':
+                print('Connection ok...')
             else:
                 print(f"Received '{msg.payload.decode()}' from '{msg.topic}' topic")
         except Exception as e: 

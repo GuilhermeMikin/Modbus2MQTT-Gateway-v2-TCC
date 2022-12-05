@@ -39,7 +39,7 @@ class Modbus2MqttClient():
         self._subscribed_thread = False
         self._mqtt_sub_thread = MQTTSubscriber(self._mqtt_client, self._mbs_client)
         self._mqtt_gateway_sub_thread = MQTTSubscriber(self._mqtt_client, self._mbs_client)
-        self._default_sub_topic = "status"
+        self._default_sub_topic = "mbs2mqtttopics/status"
         self._gateway_subscribed_thread = False
         self._mqtt2modbus_thread = False
 
@@ -70,7 +70,7 @@ class Modbus2MqttClient():
                     conn_msgstatus['Timestamp'] = str(dt.now())
                     conn_msgstatus['Message'] = "Client connected!"
                     conn_status_msg_json = json.dumps(conn_msgstatus)
-                    self._mqtt_client.publish(topic="status/connection", payload=conn_status_msg_json, QoS= 1)
+                    self._mqtt_client.publish(topic="mbs2mqtttopics/status/connection", payload=conn_status_msg_json, QoS= 1)
                     print('MQTT ---------> OK\n')
                     self._status_connection_mqtt_tls = True
                     #Creates the thread responsible for the main subscription with TLS Encryption
@@ -90,7 +90,7 @@ class Modbus2MqttClient():
                     conn_msgstatus['Timestamp'] = str(dt.now())
                     conn_msgstatus['Message'] = "Client connected!"
                     conn_status_msg_json = json.dumps(conn_msgstatus)
-                    self.mqttPublisher(topic="status/connection", msg=conn_status_msg_json)
+                    self.mqttPublisher(topic="mbs2mqtttopics/status/connection", msg=conn_status_msg_json)
                     print('MQTT ---------> OK\n')
                     self._status_connection_mqtt = True
                     #Creates the thread responsible for the main subscription without TLS
@@ -112,9 +112,9 @@ class Modbus2MqttClient():
             conn_msgstatus['Message'] = "Client disconnected!"
             conn_status_msg_json = json.dumps(conn_msgstatus)
             if self._status_connection_mqtt:
-                self.mqttPublisher(topic="status/connection", msg=conn_status_msg_json)
+                self.mqttPublisher(topic="mbs2mqtttopics/status/connection", msg=conn_status_msg_json)
             elif self._status_connection_mqtt_tls:
-                self.awsMqttPublisher(topic="status/connection", msg=conn_status_msg_json)
+                self.awsMqttPublisher(topic="mbs2mqtttopics/status/connection", msg=conn_status_msg_json)
             else:
                 pass
             self._connecting_thread = False
@@ -307,7 +307,7 @@ class Modbus2MqttClient():
                                 except Exception as e: 
                                     print('ERROR in MQTT2Modbus Gateway: ', e.args)
                         try:
-                            topic_gw = 'status/gateway'
+                            topic_gw = 'mbs2mqtttopics/status/gateway'
                             if not self._gateway_subscribed_thread:
                                 self._gateway_subscribed_thread = True
                                 if self._status_connection_mqtt:
@@ -452,7 +452,7 @@ class Modbus2MqttClient():
             self._mqtt_client.publish(topic, msg)
         except Exception as e:
             print('ERROR: ', e.args, end='')
-            print('Error when trying to publish to broker, please check IP address and port...')
+            print('Error when trying to publish to broker...')
             self._status_connection_mqtt = False
 
 
@@ -461,11 +461,17 @@ class Modbus2MqttClient():
         Método para publicação MQTT via IoT Core
         """
         try:
-            self._mqtt_client.publish(topic, msg, 1)
+            self._mqtt_client.publish(topic, msg, 0)
         except Exception as e:
             print('ERROR: ', e.args, end='')
-            print('Error when trying to publish mqtt with TLS encryption, please check the configs...')
-            self._status_connection_mqtt_tls = False
+            print('Error when trying to publish mqtt with TLS encryption...')
+            try:
+                self._mqtt_client.publish(topic, msg, 0)
+                print('It still connected..')
+            except Exception as e:
+                print('ERROR: ', e.args, end='')
+                print('Error when trying to publish mqtt with TLS encryption...')
+                self._status_connection_mqtt_tls = False
 
 
     def subscribe(self, topic, thread_name):

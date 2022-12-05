@@ -6,9 +6,7 @@ Config.set('kivy', 'exit_on_escape', '0')
 
 
 class MyWidget(MDScreen):
-    """
-    Main interface builder
-    """
+    """ Main interface builder """
     def __init__(self, **kw):
         super().__init__(**kw)
                                                     
@@ -34,11 +32,11 @@ class MyWidget(MDScreen):
                         'awsiot_path_to_amazon_root_ca1' : self.ids.awsca1.text,
                         'tls_encryption' : (True if self.ids.check_tls.active else False)
                         }
-                    self._mb2mqttClient = Modbus2MqttClient(**connection_params) #Pass the arguments to the Modbus2MQTT Client's constructor class
+                    self._mb2mqttClient =                                                                                                                                                   Modbus2MqttClient(**connection_params) #Pass the arguments to the Modbus2MQTT Client's constructor class
                     self._mb2mqttClient._connecting_thread = True
                     self._mb2mqttClient._thread_connection = threading.Thread(target=self._mb2mqttClient.ModbusMQTTConnect, name='Thred Connection')
                     self._mb2mqttClient._thread_connection.start()
-                    sleep(2)
+                    sleep(5)
                     self.ids.bt_con.text = "DISCONNECT"   #After connected, it changes the button text to "disconnect"
                     if self._mb2mqttClient._status_connection_mqtt == True or self._mb2mqttClient._status_connection_mqtt_tls == True: #If it has successfully connected
                         Snackbar(text = "Successfully connected!", bg_color=(0,1,0,1)).open()
@@ -156,9 +154,13 @@ class MyWidget(MDScreen):
                 Window.set_system_cursor("wait")
                 mqtt_sub_topic = self.ids.topic_sub.text
                 try:
-                    self._mb2mqttClient._subscribing_thread = True
-                    self._mb2mqttClient._thread_subscriber = threading.Thread(target=self._mb2mqttClient.mqttSubscriber, args=(mqtt_sub_topic))
-                    self._mb2mqttClient._thread_subscriber.start()
+                    if self._mb2mqttClient._status_connection_mqtt:
+                        self._mb2mqttClient.subscribe(topic=mqtt_sub_topic, thread_name='Manual Subscriber Thread')
+                    elif self._mb2mqttClient._status_connection_mqtt_tls:
+                        self._mb2mqttClient.subscribeTLS(topic=mqtt_sub_topic, thread_name='Manual TLS Subscriber Thread')
+                    else:
+                        print('Problem with the MQTT connection...')
+
                     Snackbar(text = f"Subscribed to topic {mqtt_sub_topic} successfully...", bg_color=(0,1,0,1), size_hint_y=0.05).open()
                     Window.set_system_cursor("arrow")
                 except Exception as e: 
@@ -168,7 +170,7 @@ class MyWidget(MDScreen):
             else:
                 try:
                     self.ids.bt_subscribe.text = " Subscribe "
-                    self._mb2mqttClient._subscribing_thread = False
+                    # self._mb2mqttClient._subscribing_thread = False
                     Snackbar(text = f"Stopping subscription...", bg_color=(1,0,0,1), size_hint_y=0.05).open()
                 except Exception as e:
                     print('ERROR: ', e.args)

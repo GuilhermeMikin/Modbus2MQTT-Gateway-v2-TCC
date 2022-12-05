@@ -83,7 +83,7 @@
                                     MDTabs:
                                         id: tabs
                                         Tab:
-                                            title: "MQTT configurations"
+                                            title: "MQTT"
                                             MDBoxLayout:
                                                 orientation: 'vertical'
                                                 padding: 15
@@ -131,7 +131,7 @@
                                                             size_hint: (0.2, None)
                                                             height: "60dp"
                                         Tab:
-                                            title: "TLS"
+                                            title: "MQTT TLS"
                                             MDBoxLayout:
                                                 orientation: 'vertical'
                                                 padding: 15
@@ -240,7 +240,7 @@
                                             hint_text: "Modbus Port"
                                             size_hint: (0.2, None)
                                             height: "60dp"
-                                            
+
                                 MDBottomNavigationItem:
                                     name: "connection"
                                     text: "CONNECT"
@@ -280,7 +280,7 @@
                                             pos_hint: {"center_x": 0.5, "center_y": 0.5}
                                         MDTextField:
                                             id: jsonpath
-                                            text: 'jsons/test.json'
+                                            text: 'jsons/conveyorbelt_vars.json'
                                             hint_text: "Path to .json file"
                                             halign: "center"
                                             size_hint: (0.6, None)
@@ -585,7 +585,7 @@
                                         MDTextField:
                                             id: topic
                                             hint_text: "Topic to Publish"
-                                            text: 'test/status'
+                                            text: 'mbs2mqttopic/pubtest'
                                             halign: "center"
                                             size_hint: (0.4, None)
                                             height: "60dp"
@@ -605,45 +605,45 @@
                                                 
 #MQTT SUBSCRIBER
 
-                                # MDBottomNavigationItem:
-                                #     name: "writesub"
-                                #     text: "SUBSCRIBER"
-                                #     icon: "arrow-down-bold-box-outline"
-                                #     MDBoxLayout:
-                                #         orientation: 'vertical'
-                                #         padding: "15dp"
-                                #         spacing: "30dp"
-                                #         MDLabel:
-                                #             id: textpub
-                                #             text: 'Subscribe to a specific topic on MQTT Broker:'
-                                #             halign: "center"
-                                #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                                #             font_size: 18
-                                #         MDTextField:
-                                #             id: topic_sub
-                                #             hint_text: "Topic to Subscribe"
-                                #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                                #             text: 'esteira/motor/status'
-                                #             halign: "center"
-                                #             size_hint: (0.4, None)
-                                #             height: "60dp"
-                                #         MDBoxLayout:
-                                #             orientation: 'vertical'
-                                #             padding: "10dp"
-                                #             spacing: "20dp"
-                                #             MDRoundFlatIconButton:
-                                #                 id: bt_subscribe
-                                #                 text: " Subscribe "
-                                #                 icon: "arrow-collapse-down"
-                                #                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                                #                 on_release:
-                                #                     root.sub()
-                                #         MDLabel:
-                                #             id: mqtt_message
-                                #             text: 'Message:'
-                                #             halign: "center"
-                                #             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                                #             font_size: 15
+                                MDBottomNavigationItem:
+                                    name: "writesub"
+                                    text: "SUBSCRIBER"
+                                    icon: "arrow-down-bold-box-outline"
+                                    MDBoxLayout:
+                                        orientation: 'vertical'
+                                        padding: "15dp"
+                                        spacing: "30dp"
+                                        MDLabel:
+                                            id: textpub
+                                            text: 'Subscribe to a specific topic on MQTT Broker:'
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            font_size: 18
+                                        MDTextField:
+                                            id: topic_sub
+                                            hint_text: "Topic to Subscribe"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            text: 'mbs2mqttopic/testesub'
+                                            halign: "center"
+                                            size_hint: (0.4, None)
+                                            height: "60dp"
+                                        MDBoxLayout:
+                                            orientation: 'vertical'
+                                            padding: "10dp"
+                                            spacing: "20dp"
+                                            MDRoundFlatIconButton:
+                                                id: bt_subscribe
+                                                text: " Subscribe "
+                                                icon: "arrow-collapse-down"
+                                                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                                on_release:
+                                                    root.sub()
+                                        MDLabel:
+                                            id: mqtt_message
+                                            text: 'Message:'
+                                            halign: "center"
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                            font_size: 15
 
 
 #TELA MODBUS                
