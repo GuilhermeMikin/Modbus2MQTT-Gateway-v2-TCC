@@ -58,7 +58,13 @@ class MQTTSubscriber():
                 except Exception as e: 
                     print('Mbs ERROR: ', e.args)
             elif msg_itens[0] == 'connection':
-                print('Connection ok...')
+                try:
+                    self._mqtt_subscriber_client.publish(topic="mbs2mqtttopics/status/testconn", payload='Hello from Modbus2MQTT', QoS=0)
+                except: 
+                    try:
+                        self._mqtt_subscriber_client.publish(topic="mbs2mqtttopics/status/testconn", payload='Hello from Modbus2MQTT')
+                    except: 
+                        pass
             else:
                 print(f"Received '{msg.payload.decode()}' from '{msg.topic}' topic")
         except Exception as e: 

@@ -320,7 +320,7 @@ class Modbus2MqttClient():
                             print('ERROR in default gateway topic subscription: ', e.args)
                     except Exception as e:
                         print(f'ERROR json: {e.args}')
-                sleep(0.2)
+                sleep(0.5)
         except Exception as e:  
             print('ERROR in Gateway: ', e.args)
 

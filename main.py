@@ -222,17 +222,32 @@ class MyWidget(MDScreen):
     
     def config(self):
         box = BoxLayout(orientation='vertical')
-        box.add_widget(Label(text='Aqui vão algumas futuras configurações'))
         box2 = BoxLayout(orientation='horizontal', spacing = "10dp")
         button_ok = Button(text='Config', size_hint=(1, 0.6))
         button_cancel = Button(text='Cancel', size_hint=(1, 0.6))
+        switch_gateway = Switch()
         box2.add_widget(button_ok)
         box2.add_widget(button_cancel)
         box.add_widget(box2)
-        popup = Popup(title='Settings', content=box, size_hint=(None, None), size=(300, 120))
+        popup = Popup(title='Settings', content=box, size_hint=(None, None), size=(300, 300))
         button_cancel.bind(on_release=popup.dismiss)
         popup.open()
         pass
+
+
+    # def show_settings(self):
+    #     if not self.settings:
+    #         self.settings = MDDialog(
+    #             title = "Closing Modbus2MQTT Gateway",
+    #             text = "Are you sure?"
+    #             buttons = [
+    #                 MDFlatButton(
+    #                     text = "Cancel", text_color = self.them
+    #                 )
+    #             ]
+    #         )
+
+    #     self.settings.open()
 
 
 
@@ -240,6 +255,7 @@ class Mbs2MQTTApp(MDApp):
     """
     Classe com o aplicativo
     """
+    dialog = None
     def build(self):
         """
         Método que gera o aplicativo com o widget principal
@@ -252,7 +268,8 @@ class Mbs2MQTTApp(MDApp):
 
     
     def on_request_close(self, *args):
-        self.textpopup(title='Exit', text='Are you sure?')
+        # self.textpopup(title='Exit', text='Are you sure?')
+        self.closing_app()
         return True
 
 
@@ -269,6 +286,27 @@ class Mbs2MQTTApp(MDApp):
         button_ok.bind(on_release= self.stop)
         button_cancel.bind(on_release=popup.dismiss)
         popup.open()
+
+    
+    def closing_app(self):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title = "Closing Modbus2MQTT Gateway",
+                text = "Are you sure?",
+                buttons = [
+                    MDFlatButton(
+                        text = "Cancel", on_release = self.close_exit_dialog
+                    ),
+                    MDRectangleFlatButton(
+                        text = "Yes, close it", on_release = self.stop
+                    )
+                ]
+            )
+        self.dialog.open()
+
+
+    def close_exit_dialog(self, obj):
+        self.dialog.dismiss()
 
 
 class Content(MDBoxLayout):
