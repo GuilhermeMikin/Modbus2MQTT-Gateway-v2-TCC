@@ -273,19 +273,19 @@ class Mbs2MQTTApp(MDApp):
         return True
 
 
-    def textpopup(self, title='', text=''):
-        box = BoxLayout(orientation='vertical')
-        box.add_widget(Label(text=text))
-        box2 = BoxLayout(orientation='horizontal', spacing = "10dp")
-        button_ok = Button(text='OK', size_hint=(1, 0.6))
-        button_cancel = Button(text='Cancel', size_hint=(1, 0.6))
-        box2.add_widget(button_ok)
-        box2.add_widget(button_cancel)
-        box.add_widget(box2)
-        popup = Popup(title=title, content=box, size_hint=(None, None), size=(300, 120))
-        button_ok.bind(on_release= self.stop)
-        button_cancel.bind(on_release=popup.dismiss)
-        popup.open()
+    # def textpopup(self, title='', text=''):
+    #     box = BoxLayout(orientation='vertical')
+    #     box.add_widget(Label(text=text))
+    #     box2 = BoxLayout(orientation='horizontal', spacing = "10dp")
+    #     button_ok = Button(text='OK', size_hint=(1, 0.6))
+    #     button_cancel = Button(text='Cancel', size_hint=(1, 0.6))
+    #     box2.add_widget(button_ok)
+    #     box2.add_widget(button_cancel)
+    #     box.add_widget(box2)
+    #     popup = Popup(title=title, content=box, size_hint=(None, None), size=(300, 120))
+    #     button_ok.bind(on_release= self.stop)
+    #     button_cancel.bind(on_release=popup.dismiss)
+    #     popup.open()
 
     
     def closing_app(self):
