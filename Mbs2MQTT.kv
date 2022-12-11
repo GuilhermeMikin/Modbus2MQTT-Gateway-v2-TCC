@@ -1,4 +1,4 @@
-#:kivy 2.1.0
+#:kivy 2.2.0
 <Content>:
     ScrollView: 
         MDList: #Left panel list 
@@ -111,7 +111,7 @@
                                                             hint_text: "MQTT Port"
                                                             size_hint: (0.2, None)
                                                             height: "60dp"
-                                                    MDGridLayout:
+                                                    MDGridLayout: 
                                                         rows: 2
                                                         size_hint: (0.5, 0.4)
                                                         spacing: "25dp"
@@ -200,7 +200,7 @@
                                                     size_hint_y: 0.35
                                                     MDCheckbox:
                                                         id: check_tls
-                                                        active: True
+                                                        active: False
                                                         size_hint_x: 0.2
                                                         halign: "center"
                                                         pos_hint: {"center_x": 0.46, "center_y": 1}
