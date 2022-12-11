@@ -8,6 +8,7 @@ Config.set('kivy', 'exit_on_escape', '0')
 class MyWidget(MDScreen):
     """ Main interface builder """
     def __init__(self, **kw):
+        self.switch_gateway = True
         super().__init__(**kw)
                                                     
 
@@ -58,6 +59,15 @@ class MyWidget(MDScreen):
                 Snackbar(text = "Something went wrong!", bg_color=(1,0,0,1)).open()
         except Exception as e:
             print(f"Error connecting to server: ",e.args)
+
+        try:
+            if self.switch_gateway:
+                sleep(1)
+                self.gateway()
+            else:
+                pass
+        except Exception as e:
+            print(f"Error when starting gateway alone: ",e.args)
     
     def gateway(self):
         if self.ids.bt_con.text == "DISCONNECT":
@@ -223,13 +233,22 @@ class MyWidget(MDScreen):
     def config(self):
         box = BoxLayout(orientation='vertical')
         box2 = BoxLayout(orientation='horizontal', spacing = "10dp")
-        button_ok = Button(text='Config', size_hint=(1, 0.6))
-        button_cancel = Button(text='Cancel', size_hint=(1, 0.6))
-        switch_gateway = Switch()
+        box3 = BoxLayout(orientation='horizontal', spacing = "10dp", size_hint = (0.9, 0.8))
+        button_ok = Button(text='Save', size_hint=(1, 0.5))
+        button_cancel = Button(text='Cancel', size_hint=(1, 0.5))
+        text_switch_gw = Label(text='Turn on gateway when connect')
+        text_switch_cl = Label(text=' ')
+        text_switch_cl2 = Label(text=' ')
+        switch_gateway = Switch(active=self.switch_gateway)
         box2.add_widget(button_ok)
         box2.add_widget(button_cancel)
+        box3.add_widget(text_switch_cl)
+        box3.add_widget(text_switch_gw)
+        box3.add_widget(text_switch_cl2)
+        box3.add_widget(switch_gateway)
+        box.add_widget(box3)
         box.add_widget(box2)
-        popup = Popup(title='Settings', content=box, size_hint=(None, None), size=(300, 300))
+        popup = Popup(title='Settings', content=box, size_hint=(None, None), size=(400, 150))
         button_cancel.bind(on_release=popup.dismiss)
         popup.open()
         pass
@@ -247,7 +266,7 @@ class MyWidget(MDScreen):
     #             ]
     #         )
 
-    #     self.settings.open()
+        # self.settings.open()
 
 
 
@@ -273,19 +292,19 @@ class Mbs2MQTTApp(MDApp):
         return True
 
 
-    # def textpopup(self, title='', text=''):
-    #     box = BoxLayout(orientation='vertical')
-    #     box.add_widget(Label(text=text))
-    #     box2 = BoxLayout(orientation='horizontal', spacing = "10dp")
-    #     button_ok = Button(text='OK', size_hint=(1, 0.6))
-    #     button_cancel = Button(text='Cancel', size_hint=(1, 0.6))
-    #     box2.add_widget(button_ok)
-    #     box2.add_widget(button_cancel)
-    #     box.add_widget(box2)
-    #     popup = Popup(title=title, content=box, size_hint=(None, None), size=(300, 120))
-    #     button_ok.bind(on_release= self.stop)
-    #     button_cancel.bind(on_release=popup.dismiss)
-    #     popup.open()
+    def textpopup(self, title='', text=''):
+        box = BoxLayout(orientation='vertical')
+        box.add_widget(Label(text=text))
+        box2 = BoxLayout(orientation='horizontal', spacing = "10dp")
+        button_ok = Button(text='OK', size_hint=(1, 0.6))
+        button_cancel = Button(text='Cancel', size_hint=(1, 0.6))
+        box2.add_widget(button_ok)
+        box2.add_widget(button_cancel)
+        box.add_widget(box2)
+        popup = Popup(title=title, content=box, size_hint=(None, None), size=(300, 120))
+        button_ok.bind(on_release= self.stop)
+        button_cancel.bind(on_release=popup.dismiss)
+        popup.open()
 
     
     def closing_app(self):

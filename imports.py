@@ -16,6 +16,7 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.switch import Switch
 
 from kivymd.icon_definitions import md_icons
 from kivymd.app import MDApp

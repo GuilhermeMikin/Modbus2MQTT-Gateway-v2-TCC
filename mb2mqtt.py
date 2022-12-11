@@ -296,9 +296,8 @@ class Modbus2MqttClient():
                                         mqtt2modbus = param_json["MQTT2Modbus"]
                                         for var in mqtt2modbus:    
                                             topic = mqtt2modbus[var]['Topic']
-                                            modbus_addr = mqtt2modbus[var]['Address']
+                                            # modbus_addr = mqtt2modbus[var]['Address']
                                             if self._status_connection_mqtt:
-                                                print('ue')
                                                 self.subscribe(topic=topic, thread_name='JSON Gateway Subscriber Thread')
                                             elif self._status_connection_mqtt_tls:
                                                 self.subscribeTLS(topic=topic, thread_name='JSON Gateway TLS Subscriber Thread')
@@ -398,6 +397,7 @@ class Modbus2MqttClient():
                 value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
                 listfloat.append(round(value, 3))
                 y += 2
+            return listfloat
         except Exception as e:
             print('ERROR converting FLOAT32: ', e.args, f'listfloat var {listfloat} >> {modbusvalues} addr {addr}')
             if tipo == 1:
