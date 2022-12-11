@@ -10,6 +10,7 @@ class MyWidget(MDScreen):
     def __init__(self, **kw):
         self.switch_gateway = True
         super().__init__(**kw)
+        # return Builder.load_file('Mbs2MQTT.kv')
                                                     
 
     def connection(self): #Function to connnect to the modbus network and stablish a connection with the mqtt broker
@@ -67,7 +68,8 @@ class MyWidget(MDScreen):
             else:
                 pass
         except Exception as e:
-            print(f"Error when starting gateway alone: ",e.args)
+            print(f"Error when starting gateway: ",e.args)
+
     
     def gateway(self):
         if self.ids.bt_con.text == "DISCONNECT":
@@ -237,14 +239,14 @@ class MyWidget(MDScreen):
         button_ok = Button(text='Save', size_hint=(1, 0.5))
         button_cancel = Button(text='Cancel', size_hint=(1, 0.5))
         text_switch_gw = Label(text='Turn on gateway when connect')
-        text_switch_cl = Label(text=' ')
-        text_switch_cl2 = Label(text=' ')
+        space = Label(text=' ')
+        space2 = Label(text=' ')
         switch_gateway = Switch(active=self.switch_gateway)
         box2.add_widget(button_ok)
         box2.add_widget(button_cancel)
-        box3.add_widget(text_switch_cl)
+        box3.add_widget(space)
         box3.add_widget(text_switch_gw)
-        box3.add_widget(text_switch_cl2)
+        box3.add_widget(space2)
         box3.add_widget(switch_gateway)
         box.add_widget(box3)
         box.add_widget(box2)
@@ -283,6 +285,7 @@ class Mbs2MQTTApp(MDApp):
         self.theme_cls.primary_palette = "Indigo"
         self.theme_cls.accent_palette = "Blue"
         Window.bind(on_request_close=self.on_request_close)
+        Builder.load_file('Mbs2MQTT.kv')
         return MyWidget()
 
     
