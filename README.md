@@ -1,4 +1,5 @@
-# Projeto de Iniciação Científica - Undergraduate Research Experience 
+# Projeto de Trabalho de Conclusão de Curso (TCC) do curso de Engenharia de Controle e Automação da Universidaqde Federal de Uberândia (UFU)
+    Completion of course work project of the Control and Automation Engineering course at the Universidade Federal de Uberlândia (UFU)
 
 ## A complete Modbus2MQTT Gateway (Version 2) with GUI (Graphical User Interface).
  
