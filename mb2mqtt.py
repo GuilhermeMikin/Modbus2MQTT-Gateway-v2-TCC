@@ -361,6 +361,7 @@ class Modbus2MqttClient():
             while i < leng:
                 if tipo == 3:
                     modbusvalues = self._mbs_client.read_holding_registers(addr - 1 + g, 2)
+                    print(modbusvalues)
                 elif tipo == 4:
                     modbusvalues = self._mbs_client.read_input_registers(addr - 1 + g, 2)
                 else:

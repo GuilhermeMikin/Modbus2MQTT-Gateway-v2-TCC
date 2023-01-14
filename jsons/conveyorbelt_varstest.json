@@ -7,14 +7,14 @@
     "Modbus2MQTT" : 
     {
         "Driver Indication": {"Address": 1217,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3},"Topic": "mbs2mqtttopics/conveyorbelt_pub/starterdriver"},
-        "Status ATV31": {"Address": 1313,"Length": 1,"Rights": "RW","Type": "BOOL","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_pub/motor/status"},
+        "Status ATV31": {"Address": 1313,"Length": 1,"Rights": "RW","Type": "BITS","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_pub/motor/status"},
         
         "Set Point Inversor": {"Address": 1314,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "Hz","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/frequency"},
         
-        "Temperature A": {"Address": 701,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/winding/a"},
-        "Temperature B": {"Address": 703,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/winding/b"},
-        "Temperature C": {"Address": 705,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/winding/c"},
-        "Temperature Housing": {"Address": 707,"Length": 1,"Rights": "RO","Type": "F32","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/housing"},
+        "Temperature A": {"Address": 701,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/winding/a"},
+        "Temperature B": {"Address": 703,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/winding/b"},
+        "Temperature C": {"Address": 705,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/winding/c"},
+        "Temperature Housing": {"Address": 707,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "°C","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/temperature/housing"},
 
         "Voltage AB": {"Address": 848,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/voltage/ab"},
         "Voltage BC": {"Address": 849,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/voltage/bc"},
@@ -30,29 +30,17 @@
         "Current N": {"Address": 844,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/current/n"},
         "Current AVG": {"Address": 846,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "A","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/current/avg"},
         
-        "Voltage THD AN": {"Address": 801,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/voltage/an"},
-        "Voltage THD BN": {"Address": 802,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/voltage/bn"},
-        "Voltage THD CN": {"Address": 803,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/voltage/cn"},
-        "Voltage THD AB": {"Address": 805,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/voltage/ab"},
-        "Voltage THD BC": {"Address": 806,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/voltage/bc"},
-        "Voltage THD CA": {"Address": 807,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/voltage/ca"},
-    
-        "Current THD A": {"Address": 875,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/current/a"},
-        "Current THD B": {"Address": 876,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/current/b"},
-        "Current THD C": {"Address": 877,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/current/c"},
-        "Current THD N": {"Address": 878,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/thd/current/n"},
-        
         "Active Power Total": {"Address": 856,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "W","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/power/active/total"},
         "Reactive Power Total": {"Address": 860,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "VAR","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/power/reactive/total"},
         "Apparent Power Total": {"Address": 864,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "VA","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/power/apparent/total"},
         "Power Factor Total": {"Address": 872,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/fatorpower/total"},
         
-        "Encoder": {"Address": 885,"Length": 1,"Rights": "RO","Type": "F32","Unity": "RPM","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/encoder"}
+        "Encoder": {"Address": 885,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "RPM","Topic": "mbs2mqtttopics/conveyorbelt_pub/measurements/encoder"}
     },
 
     "MQTT2Modbus" : 
     {
-        "Set Point Inversor": {"Address": 1314, "Rights": "RO","Type": "UINT16","Unity": "Hz","Topic": "mbs2mqtttopics/conveyorbelt_sub/measurements/frequency"},
-        "Status ATV31": {"Address": 1313, "Rights": "RW", "Type": "BOOL","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_sub/motor/status"}
+        "Uint16_Topic": {"Type": "UINT16","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_sub/uint16"},
+        "Boolean_Topic": {"Type": "BOOL","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_sub/bool"}
     }
 }

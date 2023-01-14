@@ -1,21 +1,23 @@
 {    
     "System Description": 
     {
-        "System":"Conveyor Belt","Motor":"High Performance Electric Motor","Model": "HB64548","Type": "Induction Motor - Cage","Protection": "IP55","RatedPower": "1.10 kW (1.50 CV)","RatedVoltages": "220/380 V","RatedCurrents": "4.00/2.32 A","NominalFrequency":"60 Hz","RatedRotationSpeed":"3400 RPM","Topic": "mbs2mqtttopics/system_description"
+        "System":"Json test", "Description": "Json files for application testing", "Topic": "mbs2mqtttopics/system_description"
     },
 
     "Modbus2MQTT" : 
     {
-        "Driver Indication": {"Address": 1200,"Length": 1,"Rights": "RW","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3},"Topic": "mbs2mqtttopics/conveyorbelt_pub/teste_pub_bool"},
+        "Driver Indication": {"Address": 1200,"Length": 1,"Rights": "RW","Type": "UINT16","Unity": "-","Topic": "mbs2mqtttopics/jsontest/driver"},
     
-        "Voltage AB": {"Address": 1202,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/conveyorbelt_pub/teste_pub_uint16"}
+        "Voltage AB": {"Address": 1202,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/jsontest/measurements/vab"},
+        "Voltage BC": {"Address": 1203,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/jsontest/measurements/vbc"},
+        "Voltage CA": {"Address": 1204,"Length": 1,"Rights": "RO","Type": "UINT16","Unity": "V","Topic": "mbs2mqtttopics/jsontest/measurements/vca"},
+        "Encoder": {"Address": 1220,"Length": 1,"Rights": "RO","Type": "F32","Unity": "RPM","Topic": "mbs2mqtttopics/jsontest/measurements/encoder"}
     },
 
     "MQTT2Modbus" : 
     {
-        "Driver Indication": {"Address": 1200,"Length": 1,"Rights": "RW","Type": "UINT16","Unity": "-", "Options": {"ATV31 Inverter": 2,"ATS48 Soft-start": 1,"Tesys Direct Online Starter": 3},"Topic": "mbs2mqtttopics/conveyorbelt_sub/teste_sub_uint16"},
-    
-        "Motor": {"Address": 1206,"Length": 1,"Rights": "WO","Type": "BOOL","Unity": "-","Topic": "mbs2mqtttopics/conveyorbelt_sub/teste_sub_bool"}
+        "Driver Indication": {"Address": 1200,"Rights": "RW","Type": "UINT16","Unity": "-","Topic": "mbs2mqtttopics/jsontest/driver"},
+        "Status Motor": {"Address": 1206,"Rights": "WO","Type": "BOOL","Unity": "-","Topic": "mbs2mqtttopics/jsontest/status_motor"}
     }
 
  }

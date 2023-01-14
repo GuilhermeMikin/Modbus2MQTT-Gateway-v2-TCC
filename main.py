@@ -8,7 +8,7 @@ Config.set('kivy', 'exit_on_escape', '0')
 class MyWidget(MDScreen):
     """ Main interface builder """
     def __init__(self, **kw):
-        self.switch_gateway = True
+        self.switch_gateway = False
         super().__init__(**kw)
         # return Builder.load_file('Mbs2MQTT.kv')
                                                     
@@ -285,7 +285,6 @@ class Mbs2MQTTApp(MDApp):
         self.theme_cls.primary_palette = "Indigo"
         self.theme_cls.accent_palette = "Blue"
         Window.bind(on_request_close=self.on_request_close)
-        Builder.load_file('Mbs2MQTT.kv')
         return MyWidget()
 
     
