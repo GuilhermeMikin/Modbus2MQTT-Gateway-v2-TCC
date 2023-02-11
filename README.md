@@ -1,6 +1,8 @@
 # Projeto de Trabalho de Conclusão de Curso (TCC) do curso de Engenharia de Controle e Automação da Universidaqde Federal de Uberândia (UFU)
     Bachelor's Thesis project of the Control and Automation Engineering course at the Universidade Federal de Uberlândia (UFU)
 
+![arquiteturaTCC](https://user-images.githubusercontent.com/73725712/218280704-3eacb3c6-dd5f-45d0-9e4d-26a103d5fe8a.png)
+
 [English below]
 
 Link para o trabalho: https://repositorio.ufu.br/handle/123456789/37011
