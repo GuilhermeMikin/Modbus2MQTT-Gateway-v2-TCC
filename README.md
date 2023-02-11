@@ -1,5 +1,5 @@
 # Projeto de Trabalho de Conclusão de Curso (TCC) do curso de Engenharia de Controle e Automação da Universidaqde Federal de Uberândia (UFU)
-    Bachelor's Thesis project of the Control and Automation Engineering course at the Universidade Federal de Uberlândia (UFU)
+Bachelor's Thesis project of the Control and Automation Engineering course at the Universidade Federal de Uberlândia (UFU)
 
 ![arquiteturaTCC](https://user-images.githubusercontent.com/73725712/218280704-3eacb3c6-dd5f-45d0-9e4d-26a103d5fe8a.png)
 
@@ -30,6 +30,5 @@ Keywords:
     MQTT
 
 ## A complete Modbus2MQTT Gateway (Version 2) with GUI (Graphical User Interface).
- 
-    The Modbus2MQTT Gateway V2 is an app responsible for communicating between a Modbus/TCP network and an MQTT Broker through Eclipse's paho-mqtt and also through AWS IoT Core.
+The Modbus2MQTT Gateway V2 is an app responsible for communicating between a Modbus/TCP network and an MQTT Broker through Eclipse's paho-mqtt and also through AWS IoT Core.
 
