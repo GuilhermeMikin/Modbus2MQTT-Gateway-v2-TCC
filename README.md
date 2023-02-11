@@ -5,7 +5,7 @@
 
 [English below]
 
-Link para o trabalho: https://repositorio.ufu.br/handle/123456789/37011
+Link: https://repositorio.ufu.br/handle/123456789/37011
 
 Resumo: 
     A busca constante pela otimização de processos tem sido o principal agente no desenvolvimento de novas tecnologias que visam a melhoria do desempenho das linhas de produção industrial. Neste contexto, este trabalho propõe-se a abordar alguns dos conceitos que envolvem a chamada Indústria 4.0 (I4.0), como IoT, Big Data e Cloud Computing. Para mais, é apresentado o desenvolvimento de um sistema de controle e monitoramento remoto, seguro, escalável, não invasivo e de baixo custo, responsável pelo monitoramento de indicadores de desempenho em plantas industriais que possuam suporte ao protocolo Modbus TCP. Tem como objetivo principal, prover uma solução simples, porém robusta, capaz de integrar tanto sistemas modernos quanto legados à nova realidade da I4.0, e assim, auxiliar em tomadas de decisões que possam cooperar em uma maior eficiência dos equipamentos e, consequentemente, também melhorar o resultado final da produtividade e lucratividade na produção industrial. Este sistema possui ainda a capacidade de automatizar alguns processos como por exemplo, controlar atuadores ou enviar mensagens via e-mail/SMS quando algum parâmetro exceder um limite pré-determinado.
